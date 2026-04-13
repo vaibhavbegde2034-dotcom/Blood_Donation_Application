@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Blood Donation System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Blood Donation Management System</h1>
+    </header>
+    <main>
+        <div class="card">
+            <h2>User Profile</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" name="fullName">
+                </div>
+                <div class="form-group">
+                    <label for="bloodGroup">Blood Group:</label>
+                    <select id="bloodGroup" name="bloodGroup" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        <option value="">Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city">
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="isFirstTime" name="isFirstTime" style="width: auto;">
+                    <label for="isFirstTime">First Time Donor (No previous donation)</label>
+                </div>
+                <div class="form-group" id="lastDonationGroup">
+                    <label for="lastDonationDate">Last Donation Date:</label>
+                    <input type="date" id="lastDonationDate" name="lastDonationDate">
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="availableToDonate" name="availableToDonate" style="width: auto;">
+                    <label for="availableToDonate">Available to Donate</label>
+                </div>
+                <button type="submit" class="btn">Update Profile</button>
+            </form>
+            <p id="profile-message" class="message-text" style="display: none;"></p>
+            <p><a href="index.html">Back to Home</a></p>
+        </div>
+    </main>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const isFirstTimeCb = document.getElementById('isFirstTime');
+            const lastDonationDateInput = document.getElementById('lastDonationDate');
+
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            isFirstTimeCb.addEventListener('change', () => {
+                if (isFirstTimeCb.checked) {
+                    lastDonationDateInput.value = '';
+                    lastDonationDateInput.disabled = true;
+                } else {
+                    lastDonationDateInput.disabled = false;
+                }
+            });
+
+            // Load profile data
+            try {
+                const response = await fetch(`/api/user/profile/${user.username}`);
+                if (response.ok) {
+                    const profile = await response.json();
+                    document.getElementById('fullName').value = profile.fullName || '';
+                    document.getElementById('bloodGroup').value = profile.bloodGroup || '';
+                    document.getElementById('city').value = profile.city || '';
+                    
+                    if (profile.lastDonationDate) {
+                        lastDonationDateInput.value = profile.lastDonationDate;
+                        isFirstTimeCb.checked = false;
+                    } else {
+                        isFirstTimeCb.checked = true;
+                        lastDonationDateInput.disabled = true;
+                    }
+                    
+                    document.getElementById('availableToDonate').checked = profile.availableToDonate || false;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+
+            // Handle update
+            const profileForm = document.getElementById('profile-form');
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(profileForm);
+                const data = Object.fromEntries(formData.entries());
+                data.availableToDonate = document.getElementById('availableToDonate').checked;
+                
+                const messageElement = document.getElementById('profile-message');
+
+                try {
+                    const response = await fetch(`/api/user/profile/${user.username}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const msg = await response.text();
+                        messageElement.textContent = msg;
+                        messageElement.className = 'message-text';
+                        messageElement.style.display = 'block';
+                    } else {
+                        const errorMsg = await response.text();
+                        messageElement.textContent = `Error: ${errorMsg}`;
+                        messageElement.className = 'error-text';
+                        messageElement.style.display = 'block';
+                    }
+                } catch (error) {
+                    messageElement.textContent = 'An error occurred. Please try again.';
+                    messageElement.className = 'error-text';
+                    messageElement.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

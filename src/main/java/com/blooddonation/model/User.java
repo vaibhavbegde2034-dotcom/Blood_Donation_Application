@@ -29,6 +29,12 @@ public class User {
 
     private String role = "USER";
 
+    private String fullName;
+    private String bloodGroup;
+    private String city;
+    private java.time.LocalDate lastDonationDate;
+    private boolean availableToDonate = false;
+
     public User() {}
 
     public User(Long id, String username, String email, String password, String role) {
@@ -53,4 +59,19 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public String getBloodGroup() { return bloodGroup; }
+    public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public java.time.LocalDate getLastDonationDate() { return lastDonationDate; }
+    public void setLastDonationDate(java.time.LocalDate lastDonationDate) { this.lastDonationDate = lastDonationDate; }
+
+    public boolean isAvailableToDonate() { return availableToDonate; }
+    public void setAvailableToDonate(boolean availableToDonate) { this.availableToDonate = availableToDonate; }
 }

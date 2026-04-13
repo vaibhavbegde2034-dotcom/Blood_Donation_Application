@@ -27,7 +27,8 @@ public class SecurityConfig {
                                new AntPathRequestMatcher("/*.html"), 
                                new AntPathRequestMatcher("/style.css"), 
                                new AntPathRequestMatcher("/script.js"), 
-                               new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                               new AntPathRequestMatcher("/api/auth/**"),
+                               new AntPathRequestMatcher("/api/user/**")).permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

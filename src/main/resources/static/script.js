@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (statusMessage) {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
-            statusMessage.textContent = `Hello, ${user.username}! Welcome back.`;
+            statusMessage.innerHTML = `Hello, ${user.username}! Welcome back. <br><br> <a href="profile.html" class="btn" style="display: inline-block; width: auto; text-decoration: none;">Go to Profile</a>`;
             const logoutBtn = document.createElement('button');
             logoutBtn.textContent = 'Logout';
             logoutBtn.className = 'btn';
