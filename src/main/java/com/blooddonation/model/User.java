@@ -32,6 +32,8 @@ public class User {
     private String fullName;
     private String bloodGroup;
     private String city;
+    private String contactNumber;
+    private String userType; // DONOR or REQUESTER
     private java.time.LocalDate lastDonationDate;
     private boolean availableToDonate = false;
 
@@ -68,6 +70,12 @@ public class User {
 
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
+
+    public String getContactNumber() { return contactNumber; }
+    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+
+    public String getUserType() { return userType; }
+    public void setUserType(String userType) { this.userType = userType; }
 
     public java.time.LocalDate getLastDonationDate() { return lastDonationDate; }
     public void setLastDonationDate(java.time.LocalDate lastDonationDate) { this.lastDonationDate = lastDonationDate; }

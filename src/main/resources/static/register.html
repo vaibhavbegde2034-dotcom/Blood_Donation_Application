@@ -3,34 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Blood Donation System</title>
+    <title>Become a Life Saver Today 🩸 | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header>
-        <h1>Blood Donation Management System</h1>
-    </header>
-    <main>
-        <div class="card">
-            <h2>Register</h2>
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
+<body class="auth-page">
+    <main class="auth-shell">
+        <section class="auth-layout">
+            <div class="auth-brand-panel">
+                <div class="auth-brand-copy">
+                    <a href="index.html" class="auth-logo-mark">
+                        <i class="fas fa-heart-pulse"></i>
+                        <span>BloodCare</span>
+                    </a>
+                    <h1>Become a <br>Life Saver Today 🩸</h1>
+                    <p>Join our mission and help those in need. Your small step can make a big difference in someone's life.</p>
+
+                    <div class="auth-benefits">
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-users"></i>
+                            <span>Join a network of 5000+ donors</span>
+                        </div>
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Help people in your local area</span>
+                        </div>
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <span>Save up to 3 lives with one donation</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="auth-form-panel">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Register</h2>
+                        <p>Join our mission and help those in need</p>
+                    </div>
+
+                    <form id="register-form" class="auth-form-modern">
+                        <div class="type-toggle">
+                            <input type="radio" name="userType" id="type-donor" value="DONOR" checked>
+                            <label for="type-donor">Register as Donor</label>
+                            <input type="radio" name="userType" id="type-requester" value="REQUESTER">
+                            <label for="type-requester">Register as Requester</label>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="fullName">Full Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="email">Email Address</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" name="email" placeholder="hero@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="password">Password</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="auth-form-group">
+                                <label for="bloodGroup">Blood Group</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-droplet"></i>
+                                    <select id="bloodGroup" name="bloodGroup" required>
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="auth-form-group">
+                                <label for="location">Location (City)</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="location" name="location" placeholder="City" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="contactNumber">Contact Number</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" id="contactNumber" name="contactNumber" placeholder="+91 9876543210" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn glowing-pulse">
+                            <span>Register & Save Lives</span>
+                            <i class="fas fa-heart"></i>
+                        </button>
+
+                        <p class="motivational-line">"Your small step can make a big difference"</p>
+                    </form>
+
+                    <p id="register-message" class="auth-feedback" style="display: none;"></p>
+
+                    <div class="auth-footer-row">
+                        <span>Already a donor?</span>
+                        <a href="login.html">Login here</a>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Register</button>
-            </form>
-            <p id="register-message" class="message-text" style="display: none;"></p>
-            <p>Already have an account? <a href="login.html">Login here</a></p>
-        </div>
+            </div>
+        </section>
     </main>
     <script src="script.js"></script>
 </body>

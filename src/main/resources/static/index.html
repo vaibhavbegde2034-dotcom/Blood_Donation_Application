@@ -3,19 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donation Management System</title>
+    <title>Blood Donation App | Save Lives Today</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header>
-        <h1>Blood Donation Management System</h1>
-    </header>
-    <main>
-        <div class="card">
-            <h2>Welcome to Blood Donation Portal</h2>
-            <p id="status-message">Connecting to the system...</p>
+<body class="home-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="#home">Home</a>
+                <a href="#impact">Impact</a>
+                <a href="#donate">Donate</a>
+                <a href="#request-blood">Requests</a>
+                <a href="#about">About</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </nav>
+
+            <div class="nav-auth-actions" id="home-nav-actions">
+                <a href="register.html" class="btn-nav-primary">Become a Donor</a>
+            </div>
         </div>
+    </header>
+
+    <main id="home">
+        <section class="hero-modern">
+            <div class="site-shell hero-grid">
+                <div class="hero-content">
+                    <span class="hero-label"><i class="fas fa-heart"></i> Every drop counts</span>
+                    <h1>Your Blood Can <br><span class="text-gradient">Save Lives Today</span></h1>
+                    <p>
+                        A single donation can create hope for three families. Join our trusted community of heroes and make a direct impact when every second matters.
+                    </p>
+
+                    <div class="hero-cta-row" id="hero-actions">
+                        <a href="register.html" class="btn-hero-primary glowing-btn" id="hero-donate-link">Donate Now</a>
+                        <a href="#request-blood" class="btn-hero-secondary" id="hero-request-link">Request Blood</a>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="hero-image-card"></div>
+                    <div class="floating-badge top-badge">
+                        <i class="fas fa-droplet" style="color: var(--primary-red);"></i>
+                        <span><strong>Emergency Ready</strong></span>
+                    </div>
+                    <div class="floating-badge bottom-badge">
+                        <i class="fas fa-shield-heart" style="color: var(--primary-red);"></i>
+                        <span id="status-message">Live system online</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="impact-band" id="impact">
+            <div class="site-shell">
+                <div class="impact-content">
+                    <div class="impact-text">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <h2>Every <span class="highlight">2 seconds</span>, someone needs blood.</h2>
+                        <p>Your simple decision today could be someone's miracle tomorrow. Be the reason someone smiles today.</p>
+                    </div>
+                    <div class="impact-visuals">
+                        <div class="impact-icon-box">
+                            <i class="fas fa-hospital"></i>
+                            <span>Hospitals</span>
+                        </div>
+                        <div class="impact-icon-box">
+                            <i class="fas fa-child-reaching"></i>
+                            <span>Children</span>
+                        </div>
+                        <div class="impact-icon-box">
+                            <i class="fas fa-ambulance"></i>
+                            <span>Emergencies</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-modern">
+            <div class="site-shell">
+                <div class="stats-grid-modern">
+                    <article class="stat-card-modern">
+                        <div class="stat-icon-modern"><i class="fas fa-users"></i></div>
+                        <strong><span id="total-donors-count">0</span></strong>
+                        <span>Total Donors</span>
+                    </article>
+                    <article class="stat-card-modern">
+                        <div class="stat-icon-modern"><i class="fas fa-hand-holding-heart"></i></div>
+                        <strong><span id="lives-saved-count">0</span></strong>
+                        <span>Lives Saved</span>
+                    </article>
+                    <article class="stat-card-modern">
+                        <div class="stat-icon-modern"><i class="fas fa-droplet"></i></div>
+                        <strong><span id="active-request-count">0</span></strong>
+                        <span>Active Requests</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block" id="donate">
+            <div class="site-shell">
+                <div class="section-head">
+                    <h2>Powerful Features for Life-Saving Coordination</h2>
+                    <p>We provide the tools to make blood donation coordination reliable, quick, and emotionally supportive.</p>
+                </div>
+
+                <div class="features-grid-modern">
+                    <article class="feature-panel">
+                        <div class="feature-panel-icon"><i class="fas fa-search-location"></i></div>
+                        <h3>Find Donors Quickly</h3>
+                        <p>Locate available donors in your city instantly during critical emergencies.</p>
+                    </article>
+                    <article class="feature-panel">
+                        <div class="feature-panel-icon"><i class="fas fa-bell"></i></div>
+                        <h3>Emergency Requests</h3>
+                        <p>Post and track urgent blood needs with real-time visibility to all donors.</p>
+                    </article>
+                    <article class="feature-panel">
+                        <div class="feature-panel-icon"><i class="fas fa-user-plus"></i></div>
+                        <h3>Easy Registration</h3>
+                        <p>Join our network in seconds and stay prepared to help others in need.</p>
+                    </article>
+                    <article class="feature-panel">
+                        <div class="feature-panel-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3>Secure & Trusted</h3>
+                        <p>Your data is protected, and our community is built on trust and verification.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block how-it-works-band">
+            <div class="site-shell">
+                <div class="section-head">
+                    <h2>How It Works</h2>
+                    <p>Three simple steps that turn willingness into immediate impact.</p>
+                </div>
+
+                <div class="steps-grid">
+                    <article class="step-card">
+                        <span class="step-number">01</span>
+                        <h3>Register</h3>
+                        <p>Create your account and join the global network of life-savers.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-number">02</span>
+                        <h3>Donate or Request</h3>
+                        <p>Find someone in need or request support for your loved ones.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-number">03</span>
+                        <h3>Save Lives</h3>
+                        <p>Every donation is a second chance at life for someone in crisis.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block testimonials-section">
+            <div class="site-shell">
+                <div class="section-head">
+                    <h2>Emotional Stories</h2>
+                    <p>Real experiences from people who believe in the power of timely support.</p>
+                </div>
+
+                <div class="testimonials-grid">
+                    <article class="testimonial-card">
+                        <p>"When my father needed rare B- blood, this platform connected us to a donor within 20 minutes. It was a miracle."</p>
+                        <div class="testimonial-user">
+                            <strong>Sarah M.</strong>
+                            <span>Recipient Family</span>
+                        </div>
+                    </article>
+                    <article class="testimonial-card">
+                        <p>"Donating blood is the most fulfilling thing I've ever done. Knowing I helped save a life is an incredible feeling."</p>
+                        <div class="testimonial-user">
+                            <strong>James L.</strong>
+                            <span>Volunteer Donor</span>
+                        </div>
+                    </article>
+                    <article class="testimonial-card">
+                        <p>"As a doctor, I've seen how critical time is. This app reduces coordination stress significantly during emergencies."</p>
+                        <div class="testimonial-user">
+                            <strong>Dr. Elena K.</strong>
+                            <span>Medical Professional</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-banner">
+            <div class="site-shell">
+                <h2>Be a Hero Today. Donate Blood.</h2>
+                <p>Your one decision can change everything for someone else.</p>
+                <a href="register.html" class="btn-cta-large glowing-btn">Join the Mission <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </section>
+
+        <section class="section-block" id="request-blood">
+            <div class="site-shell">
+                <div class="section-head">
+                    <h2>Active Emergency Requests</h2>
+                    <p>See live needs and respond immediately if you can help.</p>
+                </div>
+                <div id="active-requests-list">
+                    <!-- Loaded dynamically by script.js -->
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="site-footer" id="about">
+        <div class="site-shell footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="brand-logo">
+                    <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                    <span class="brand-text">BloodCare</span>
+                </a>
+                <p>Connecting humanity through technology. Our mission is to ensure no one suffers due to the unavailability of blood during emergencies.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <a href="#home">Home</a>
+                <a href="#impact">Our Impact</a>
+                <a href="#donate">Donate</a>
+                <a href="#request-blood">Requests</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <a href="mailto:support@bloodcare.com">support@bloodcare.com</a>
+                <a href="tel:+1234567890">+1 (234) 567-890</a>
+                <p style="color: rgba(255, 255, 255, 0.6);">123 Hope Lane, Unity City</p>
+            </div>
+
+            <div class="footer-column">
+                <h3>Join Us</h3>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+                <a href="profile.html">Your Profile</a>
+            </div>
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>

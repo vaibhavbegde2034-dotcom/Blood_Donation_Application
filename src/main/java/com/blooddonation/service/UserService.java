@@ -24,19 +24,27 @@ public class UserService {
 
     @Transactional
     public User registerUser(UserRegistrationDto registrationDto) {
-        System.out.println("DEBUG: Checking if user exists: " + registrationDto.getUsername());
-        if (userRepository.findByUsername(registrationDto.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+        String effectiveUsername = (registrationDto.getUsername() != null && !registrationDto.getUsername().isBlank()) 
+                                    ? registrationDto.getUsername() : registrationDto.getEmail();
+        
+        System.out.println("DEBUG: Checking if user exists: " + effectiveUsername);
+        if (userRepository.findByUsername(effectiveUsername).isPresent()) {
+            throw new RuntimeException("Username or Email already exists");
         }
         if (userRepository.findByEmail(registrationDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
 
-        System.out.println("DEBUG: Encoding password for user: " + registrationDto.getUsername());
+        System.out.println("DEBUG: Encoding password for user: " + effectiveUsername);
         User user = new User();
-        user.setUsername(registrationDto.getUsername());
+        user.setUsername(effectiveUsername);
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        user.setFullName(registrationDto.getFullName());
+        user.setBloodGroup(registrationDto.getBloodGroup());
+        user.setCity(registrationDto.getLocation());
+        user.setContactNumber(registrationDto.getContactNumber());
+        user.setUserType(registrationDto.getUserType());
         user.setRole("USER");
         
         System.out.println("DEBUG: Saving user to database...");

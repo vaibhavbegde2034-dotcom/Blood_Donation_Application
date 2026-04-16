@@ -3,30 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Blood Donation System</title>
+    <title>Welcome Back Hero ❤️ | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header>
-        <h1>Blood Donation Management System</h1>
-    </header>
-    <main>
-        <div class="card">
-            <h2>Login</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="usernameOrEmail">Username or Email:</label>
-                    <input type="text" id="usernameOrEmail" name="usernameOrEmail" required>
+<body class="auth-page">
+    <main class="auth-shell">
+        <section class="auth-layout">
+            <div class="auth-brand-panel">
+                <div class="auth-brand-copy">
+                    <a href="index.html" class="auth-logo-mark">
+                        <i class="fas fa-heart-pulse"></i>
+                        <span>BloodCare</span>
+                    </a>
+                    <h1>Welcome Back, <br>Hero ❤️</h1>
+                    <p>Your one step can save lives today. Log in to your dashboard and see how you've made an impact.</p>
+
+                    <div class="auth-benefits">
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-shield-heart"></i>
+                            <span>Secure & Trusted Profile</span>
+                        </div>
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Instant Emergency Alerts</span>
+                        </div>
+                        <div class="auth-benefit-item">
+                            <i class="fas fa-history"></i>
+                            <span>Track Donation History</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="auth-form-panel">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Login</h2>
+                        <p>Your one step can save lives today</p>
+                    </div>
+
+                    <form id="login-form" class="auth-form-modern">
+                        <div class="auth-form-group">
+                            <label for="usernameOrEmail">Email Address</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="usernameOrEmail" name="usernameOrEmail" placeholder="hero@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="password">Password</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" data-toggle-password="password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="text-align: right; margin-top: -10px;">
+                            <a href="#" style="font-size: 0.85rem; color: #666; font-weight: 600;">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn glowing-pulse">
+                            <span>Login</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+
+                        <p class="motivational-line">"Every login brings you closer to saving a life"</p>
+                    </form>
+
+                    <p id="login-error" class="auth-feedback auth-feedback-error" style="display: none;"></p>
+
+                    <div class="auth-footer-row">
+                        <span>New hero?</span>
+                        <a href="register.html">Create a donor account</a>
+                    </div>
                 </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
-            <p id="login-error" class="error-text" style="display: none;"></p>
-            <p>Don't have an account? <a href="register.html">Register here</a></p>
-        </div>
+            </div>
+        </section>
     </main>
     <script src="script.js"></script>
 </body>
