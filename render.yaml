@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: blood-donation-app
+    runtime: docker
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: blood-db
+          property: jdbcConnectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: blood-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: blood-db
+          property: password
+
+databases:
+  - name: blood-db
+    plan: free
