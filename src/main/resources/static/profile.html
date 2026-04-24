@@ -3,135 +3,496 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Blood Donation System</title>
+    <title>My Profile | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-page-bg {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .profile-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .profile-main-card {
+            background: var(--pure-white);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .profile-header-banner {
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
+            position: relative;
+        }
+
+        .profile-header-content {
+            padding: 0 40px;
+            margin-top: -60px;
+            display: flex;
+            align-items: flex-end;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .profile-avatar-large {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--primary-red);
+            font-weight: 800;
+            box-shadow: var(--shadow-md);
+            border: 5px solid white;
+        }
+
+        .profile-identity h1 {
+            font-size: 2.2rem;
+            color: var(--slate-dark);
+            margin-bottom: 5px;
+        }
+
+        .profile-identity p {
+            color: var(--slate-gray);
+            font-weight: 500;
+        }
+
+        .profile-body {
+            padding: 0 40px 40px;
+        }
+
+        .status-section {
+            background: var(--slate-light);
+            padding: 25px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .status-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-available { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .dot-unavailable { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .info-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-box i {
+            width: 50px;
+            height: 50px;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary-red);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--slate-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--slate-dark);
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+
+        .action-footer {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Form Mode */
+        .edit-form { display: none; }
+        .view-mode.hidden { display: none; }
+        .edit-form.active { display: block; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header-content { flex-direction: column; align-items: center; text-align: center; }
+            .details-grid, .form-row { grid-template-columns: 1fr; }
+            .status-section { flex-direction: column; gap: 20px; text-align: center; }
+            .profile-header-banner { height: 120px; }
+        }
+
+        /* Toggle Switch Animation */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #22c55e; }
+        input:focus + .slider { box-shadow: 0 0 1px #22c55e; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
 </head>
-<body>
-    <header>
-        <h1>Blood Donation Management System</h1>
-    </header>
-    <main>
-        <div class="card">
-            <h2>User Profile</h2>
-            <form id="profile-form">
-                <div class="form-group">
-                    <label for="fullName">Full Name:</label>
-                    <input type="text" id="fullName" name="fullName">
-                </div>
-                <div class="form-group">
-                    <label for="bloodGroup">Blood Group:</label>
-                    <select id="bloodGroup" name="bloodGroup" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
-                        <option value="">Select Blood Group</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="city">City:</label>
-                    <input type="text" id="city" name="city">
-                </div>
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="isFirstTime" name="isFirstTime" style="width: auto;">
-                    <label for="isFirstTime">First Time Donor (No previous donation)</label>
-                </div>
-                <div class="form-group" id="lastDonationGroup">
-                    <label for="lastDonationDate">Last Donation Date:</label>
-                    <input type="date" id="lastDonationDate" name="lastDonationDate">
-                </div>
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="availableToDonate" name="availableToDonate" style="width: auto;">
-                    <label for="availableToDonate">Available to Donate</label>
-                </div>
-                <button type="submit" class="btn">Update Profile</button>
-            </form>
-            <p id="profile-message" class="message-text" style="display: none;"></p>
-            <p><a href="index.html">Back to Home</a></p>
+<body class="profile-page-bg">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="index.html#impact">Impact</a>
+            </nav>
+            <div class="nav-auth-actions">
+                <a href="dashboard.html" class="btn-nav-primary">Back to Dashboard</a>
+            </div>
         </div>
-    </main>
+    </header>
+
+    <div class="profile-wrapper">
+        <div class="profile-main-card">
+            <div class="profile-header-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="profile-avatar-large" id="profile-initials-large">U</div>
+                <div class="profile-identity">
+                    <h1 id="display-fullname">User Name</h1>
+                    <p id="display-username">@username</p>
+                </div>
+            </div>
+
+            <div class="profile-body">
+                <!-- Status Toggle Section -->
+                <div class="status-section">
+                    <div class="status-info">
+                        <h4>Donor Availability</h4>
+                        <div class="status-indicator" id="status-indicator-text">
+                            <span class="dot" id="status-dot"></span>
+                            <span id="status-text">Not Available</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="availability-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- View Mode -->
+                <div class="view-mode" id="profile-view">
+                    <div class="details-grid">
+                        <div class="info-box">
+                            <i class="fas fa-droplet"></i>
+                            <div>
+                                <div class="info-label">Blood Group</div>
+                                <div class="info-value" id="view-bloodgroup">O+</div>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <div class="info-label">City</div>
+                                <div class="info-value" id="view-city">New York</div>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <i class="fas fa-calendar-check"></i>
+                            <div>
+                                <div class="info-label">Last Donation</div>
+                                <div class="info-value" id="view-lastdonation">Never</div>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <div class="info-label">Contact</div>
+                                <div class="info-value" id="view-contact">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-footer">
+                        <button class="btn-hero-primary" id="edit-profile-btn">
+                            <i class="fas fa-user-pen"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div class="edit-form" id="profile-edit">
+                    <form id="profile-form-modern">
+                        <div class="form-row">
+                            <div class="auth-form-group">
+                                <label>Full Name</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="edit-fullName" name="fullName" required>
+                                </div>
+                            </div>
+                            <div class="auth-form-group">
+                                <label>Blood Group</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-droplet"></i>
+                                    <select id="edit-bloodGroup" name="bloodGroup">
+                                        <option value="A+">A+</option><option value="A-">A-</option>
+                                        <option value="B+">B+</option><option value="B-">B-</option>
+                                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                        <option value="O+">O+</option><option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="auth-form-group">
+                                <label>City</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="edit-city" name="city">
+                                </div>
+                            </div>
+                            <div class="auth-form-group">
+                                <label>Last Donation Date</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-calendar"></i>
+                                    <input type="date" id="edit-lastDonationDate" name="lastDonationDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-footer" style="margin-top: 30px;">
+                            <button type="submit" class="btn-nav-primary">Save Changes</button>
+                            <button type="button" class="btn-hero-secondary" id="cancel-edit-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
     <script src="script.js"></script>
     <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `notification-item`;
+            toast.style.backgroundColor = type === 'success' ? '#f0fdf4' : '#fef2f2';
+            toast.style.borderLeftColor = type === 'success' ? '#22c55e' : '#ef4444';
+            toast.style.padding = '15px';
+            toast.style.borderRadius = '12px';
+            toast.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+            toast.style.marginBottom = '10px';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '12px';
+            
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="color: ${type === 'success' ? '#22c55e' : '#ef4444'}"></i>
+                <span style="font-size: 0.9rem; font-weight: 500;">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                toast.style.transition = '0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const user = JSON.parse(localStorage.getItem('user'));
-            const isFirstTimeCb = document.getElementById('isFirstTime');
-            const lastDonationDateInput = document.getElementById('lastDonationDate');
-
             if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            isFirstTimeCb.addEventListener('change', () => {
-                if (isFirstTimeCb.checked) {
-                    lastDonationDateInput.value = '';
-                    lastDonationDateInput.disabled = true;
-                } else {
-                    lastDonationDateInput.disabled = false;
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            
+            const viewMode = document.getElementById('profile-view');
+            const editMode = document.getElementById('profile-edit');
+            const availabilityToggle = document.getElementById('availability-toggle');
+
+            // Load Initial Data
+            async function loadProfile() {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/user/profile/${user.username}`);
+                    if (response.ok) {
+                        const profile = await response.json();
+                        
+                        // Update Display
+                        document.getElementById('display-fullname').textContent = profile.fullName || user.username;
+                        document.getElementById('display-username').textContent = `@${user.username}`;
+                        document.getElementById('view-bloodgroup').textContent = profile.bloodGroup || 'Not Set';
+                        document.getElementById('view-city').textContent = profile.city || 'Not Set';
+                        document.getElementById('view-lastdonation').textContent = profile.lastDonationDate || 'Never';
+                        document.getElementById('profile-initials-large').textContent = (profile.fullName || user.username).charAt(0).toUpperCase();
+
+                        // Update Toggle
+                        availabilityToggle.checked = profile.availableToDonate;
+                        updateStatusUI(profile.availableToDonate);
+
+                        // Fill Edit Form
+                        document.getElementById('edit-fullName').value = profile.fullName || '';
+                        document.getElementById('edit-bloodGroup').value = profile.bloodGroup || 'A+';
+                        document.getElementById('edit-city').value = profile.city || '';
+                        document.getElementById('edit-lastDonationDate').value = profile.lastDonationDate || '';
+                    }
+                } catch (err) {
+                    console.error('Error loading profile:', err);
+                }
+            }
+
+            function updateStatusUI(isAvailable) {
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                dot.className = `dot ${isAvailable ? 'dot-available' : 'dot-unavailable'}`;
+                text.textContent = isAvailable ? 'Available to Donate' : 'Not Available';
+                text.style.color = isAvailable ? '#22c55e' : '#ef4444';
+            }
+
+            // Availability Toggle Listener
+            availabilityToggle.addEventListener('change', async () => {
+                const isAvailable = availabilityToggle.checked;
+                try {
+                    const response = await fetch(`${BASE_URL}/api/user/availability/${user.username}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isAvailable: isAvailable })
+                    });
+
+                    if (response.ok) {
+                        updateStatusUI(isAvailable);
+                        showToast(`Status updated to ${isAvailable ? 'Available' : 'Unavailable'}`, 'success');
+                    } else {
+                        const errorMsg = await response.text();
+                        availabilityToggle.checked = !isAvailable;
+                        showToast(errorMsg || 'Eligibility check failed.', 'error');
+                    }
+                } catch (err) {
+                    availabilityToggle.checked = !isAvailable;
+                    showToast('Server error occurred.', 'error');
                 }
             });
 
-            // Load profile data
-            try {
-                const response = await fetch(`/api/user/profile/${user.username}`);
-                if (response.ok) {
-                    const profile = await response.json();
-                    document.getElementById('fullName').value = profile.fullName || '';
-                    document.getElementById('bloodGroup').value = profile.bloodGroup || '';
-                    document.getElementById('city').value = profile.city || '';
-                    
-                    if (profile.lastDonationDate) {
-                        lastDonationDateInput.value = profile.lastDonationDate;
-                        isFirstTimeCb.checked = false;
-                    } else {
-                        isFirstTimeCb.checked = true;
-                        lastDonationDateInput.disabled = true;
-                    }
-                    
-                    document.getElementById('availableToDonate').checked = profile.availableToDonate || false;
-                }
-            } catch (error) {
-                console.error('Error loading profile:', error);
-            }
+            // Edit/View Transitions
+            document.getElementById('edit-profile-btn').onclick = () => {
+                viewMode.classList.add('hidden');
+                editMode.classList.add('active');
+            };
 
-            // Handle update
-            const profileForm = document.getElementById('profile-form');
-            profileForm.addEventListener('submit', async (e) => {
+            document.getElementById('cancel-edit-btn').onclick = () => {
+                viewMode.classList.remove('hidden');
+                editMode.classList.remove('active');
+            };
+
+            // Form Submit
+            document.getElementById('profile-form-modern').onsubmit = async (e) => {
                 e.preventDefault();
-                const formData = new FormData(profileForm);
+                const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData.entries());
-                data.availableToDonate = document.getElementById('availableToDonate').checked;
-                
-                const messageElement = document.getElementById('profile-message');
+                data.availableToDonate = availabilityToggle.checked;
 
                 try {
-                    const response = await fetch(`/api/user/profile/${user.username}`, {
+                    const response = await fetch(`${BASE_URL}/api/user/profile/${user.username}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
-                        const msg = await response.text();
-                        messageElement.textContent = msg;
-                        messageElement.className = 'message-text';
-                        messageElement.style.display = 'block';
+                        showToast('Profile updated successfully!', 'success');
+                        await loadProfile();
+                        viewMode.classList.remove('hidden');
+                        editMode.classList.remove('active');
                     } else {
                         const errorMsg = await response.text();
-                        messageElement.textContent = `Error: ${errorMsg}`;
-                        messageElement.className = 'error-text';
-                        messageElement.style.display = 'block';
+                        showToast(errorMsg || 'Update failed.', 'error');
                     }
-                } catch (error) {
-                    messageElement.textContent = 'An error occurred. Please try again.';
-                    messageElement.className = 'error-text';
-                    messageElement.style.display = 'block';
+                } catch (err) {
+                    showToast('Connection error.', 'error');
                 }
-            });
+            };
+
+            await loadProfile();
         });
     </script>
 </body>

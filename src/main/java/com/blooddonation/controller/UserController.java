@@ -38,4 +38,15 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/availability/{username}")
+    public ResponseEntity<?> updateAvailability(@PathVariable String username, @RequestBody java.util.Map<String, Boolean> payload) {
+        try {
+            boolean isAvailable = payload.get("isAvailable");
+            User user = userService.updateAvailability(username, isAvailable);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

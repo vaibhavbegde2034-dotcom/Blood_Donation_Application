@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Donors | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-page-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            padding: 120px 0 80px;
+            color: white;
+            text-align: center;
+        }
+
+        .search-page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .search-filters-bar {
+            background: var(--pure-white);
+            max-width: 1000px;
+            margin: -40px auto 60px;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            display: grid;
+            grid-template-columns: 1fr 1.5fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .results-section {
+            padding-bottom: 80px;
+        }
+
+        .donor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .donor-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--slate-light);
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
+        }
+
+        .donor-card .blood-type-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary-red);
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .donor-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--slate-light);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--slate-gray);
+        }
+
+        .meta-item i {
+            color: var(--primary-red);
+            width: 16px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: #f0fdf4;
+            color: #166534;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .status-pill::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 900px) {
+            .search-filters-bar {
+                grid-template-columns: 1fr;
+                margin: -40px 20px 40px;
+            }
+        }
+    </style>
+</head>
+<body class="home-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="search.html">Search</a>
+            </nav>
+            <div class="nav-auth-actions" id="search-nav-actions">
+                <a href="dashboard.html" class="btn-nav-primary">My Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="search-page-header">
+            <div class="site-shell">
+                <h1>Find Life-Savers</h1>
+                <p>Connect with available blood donors in your community instantly.</p>
+            </div>
+        </section>
+
+        <section class="site-shell results-section">
+            <div class="search-filters-bar">
+                <div class="auth-form-group" style="margin-bottom: 0;">
+                    <label>Blood Group</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-droplet"></i>
+                        <select id="filter-blood-group">
+                            <option value="">All Blood Groups</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="auth-form-group" style="margin-bottom: 0;">
+                    <label>City / Location</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="filter-city" placeholder="Search by city...">
+                    </div>
+                </div>
+                <button id="search-btn" class="btn-nav-primary" style="height: 52px; padding: 0 40px;">
+                    <i class="fas fa-search"></i> Search Donors
+                </button>
+            </div>
+
+            <div id="loading-spinner" style="display: none; text-align: center; padding: 50px;">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary-red);"></i>
+                <p style="margin-top: 15px; color: var(--slate-gray); font-weight: 500;">Filtering life-savers...</p>
+            </div>
+
+            <div id="donor-results" class="donor-grid">
+                <!-- Cards loaded dynamically -->
+            </div>
+
+            <div id="no-results" style="display: none; text-align: center; padding: 100px 20px; background: var(--pure-white); border-radius: 30px; box-shadow: var(--shadow-sm);">
+                <i class="fas fa-search" style="font-size: 4rem; color: var(--slate-light); margin-bottom: 25px;"></i>
+                <h3 style="font-size: 1.8rem; color: var(--slate-dark); margin-bottom: 10px;">No donors found</h3>
+                <p style="color: var(--slate-gray);">We couldn't find any available donors matching those filters. Try broadening your search.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            const donorGrid = document.getElementById('donor-results');
+            const loading = document.getElementById('loading-spinner');
+            const noResults = document.getElementById('no-results');
+            const searchBtn = document.getElementById('search-btn');
+            const bloodFilter = document.getElementById('filter-blood-group');
+            const cityFilter = document.getElementById('filter-city');
+
+            async function fetchDonors(bloodGroup = '', city = '') {
+                donorGrid.style.display = 'none';
+                noResults.style.display = 'none';
+                loading.style.display = 'block';
+
+                try {
+                    const params = new URLSearchParams();
+                    if (bloodGroup) params.append('bloodGroup', bloodGroup);
+                    if (city) params.append('city', city);
+
+                    const response = await fetch(`${BASE_URL}/api/donors/search?${params.toString()}`);
+                    if (response.ok) {
+                        const donors = await response.json();
+                        renderDonors(donors);
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+
+            function renderDonors(donors) {
+                if (donors.length === 0) {
+                    noResults.style.display = 'block';
+                    donorGrid.style.display = 'none';
+                    return;
+                }
+
+                donorGrid.style.display = 'grid';
+                donorGrid.innerHTML = donors.map(donor => `
+                    <article class="donor-card">
+                        <div class="status-pill">AVAILABLE</div>
+                        <div class="blood-type-badge">${donor.bloodGroup}</div>
+                        <h3 style="font-size: 1.4rem; margin-bottom: 5px;">${donor.fullName || 'Hero Donor'}</h3>
+                        
+                        <div class="donor-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${donor.city || 'Location not set'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Last Donated: ${donor.lastDonationDate || 'First Time Donor'}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 25px; display: flex; gap: 10px;">
+                            <a href="tel:#" class="btn-nav-primary" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 12px;">
+                                <i class="fas fa-phone"></i> Contact
+                            </a>
+                            <button class="btn-hero-secondary" style="padding: 12px 15px; border-radius: 12px;">
+                                <i class="fas fa-hand-holding-heart"></i>
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+            }
+
+            searchBtn.addEventListener('click', () => {
+                fetchDonors(bloodFilter.value, cityFilter.value);
+            });
+
+            // Initial load: show all donors
+            fetchDonors();
+        });
+    </script>
+</body>
+</html>

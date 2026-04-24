@@ -38,15 +38,25 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginDto loginDto) {
+        System.out.println("Login attempt for: " + loginDto.getUsernameOrEmail());
         Optional<User> userOptional = userService.findByUsernameOrEmail(loginDto.getUsernameOrEmail());
         
-        if (userOptional.isPresent() && passwordEncoder.matches(loginDto.getPassword(), userOptional.get().getPassword())) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("username", userOptional.get().getUsername());
-            return ResponseEntity.ok(response);
+        if (userOptional.isPresent()) {
+            boolean matches = passwordEncoder.matches(loginDto.getPassword(), userOptional.get().getPassword());
+            System.out.println("User found. Password matches: " + matches);
+            if (matches) {
+                User user = userOptional.get();
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Login successful");
+                response.put("username", user.getUsername());
+                response.put("fullName", user.getFullName() != null ? user.getFullName() : "");
+                response.put("email", user.getEmail());
+                response.put("id", user.getId().toString());
+                return ResponseEntity.ok(response);
+            }
         } else {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            System.out.println("User not found with username or email: " + loginDto.getUsernameOrEmail());
         }
+        return ResponseEntity.status(401).body("Invalid username or password");
     }
 }

@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 public class BloodRequestDto {
 
     private Long id;
+    private String patientName;
     private String bloodGroup;
+    private Integer unitsRequired;
     private String city;
     private String hospitalName;
     private String contactNumber;
@@ -20,8 +22,14 @@ public class BloodRequestDto {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    public String getPatientName() { return patientName; }
+    public void setPatientName(String patientName) { this.patientName = patientName; }
+
     public String getBloodGroup() { return bloodGroup; }
     public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
+
+    public Integer getUnitsRequired() { return unitsRequired; }
+    public void setUnitsRequired(Integer unitsRequired) { this.unitsRequired = unitsRequired; }
 
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }

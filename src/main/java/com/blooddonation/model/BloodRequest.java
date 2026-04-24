@@ -16,7 +16,13 @@ public class BloodRequest {
     private User requester;
 
     @Column(nullable = false)
+    private String patientName;
+
+    @Column(nullable = false)
     private String bloodGroup;
+
+    @Column(nullable = false)
+    private Integer unitsRequired;
 
     @Column(nullable = false)
     private String city;
@@ -46,8 +52,14 @@ public class BloodRequest {
     public User getRequester() { return requester; }
     public void setRequester(User requester) { this.requester = requester; }
 
+    public String getPatientName() { return patientName; }
+    public void setPatientName(String patientName) { this.patientName = patientName; }
+
     public String getBloodGroup() { return bloodGroup; }
     public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
+
+    public Integer getUnitsRequired() { return unitsRequired; }
+    public void setUnitsRequired(Integer unitsRequired) { this.unitsRequired = unitsRequired; }
 
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }

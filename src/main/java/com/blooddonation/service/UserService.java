@@ -75,9 +75,29 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User updateAvailability(String username, boolean isAvailable) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (isAvailable && !isEligibleToDonate(user.getLastDonationDate())) {
+            throw new RuntimeException("You are not eligible to donate. 90 days must pass since your last donation.");
+        }
+
+        user.setAvailableToDonate(isAvailable);
+        return userRepository.save(user);
+    }
+
     public boolean isEligibleToDonate(LocalDate lastDonationDate) {
         if (lastDonationDate == null) return true;
         return ChronoUnit.DAYS.between(lastDonationDate, LocalDate.now()) >= 90;
+    }
+
+    public java.util.List<User> searchDonors(String bloodGroup, String city) {
+        return userRepository.findByAvailableToDonateTrueAndBloodGroupContainingAndCityContaining(
+            bloodGroup != null ? bloodGroup : "", 
+            city != null ? city : ""
+        );
     }
 
     public Optional<User> findByUsernameOrEmail(String usernameOrEmail) {

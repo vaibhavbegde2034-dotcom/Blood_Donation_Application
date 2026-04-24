@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="#history">History</a>
+                <a href="#requests">Requests</a>
+            </nav>
+
+            <div class="nav-auth-actions" id="dashboard-nav-actions">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span id="nav-user-name" style="font-weight: 600;">User Name</span>
+                    <button id="logout-btn" class="btn-nav-primary" style="padding: 10px 20px;">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="site-shell dashboard-container">
+        <!-- Sidebar: Profile Summary -->
+        <aside class="dashboard-sidebar">
+            <div class="dashboard-card profile-card">
+                <div class="profile-avatar" id="profile-initials">U</div>
+                <div class="profile-info">
+                    <h3 id="profile-name">User Full Name</h3>
+                    <span class="blood-badge" id="profile-blood-group">O+</span>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <span class="detail-label">City</span>
+                        <span class="detail-value" id="profile-city">New York</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Last Donation</span>
+                        <span class="detail-value" id="profile-last-donation">Never</span>
+                    </div>
+                </div>
+
+                <div class="availability-toggle">
+                    <span>Availability</span>
+                    <label class="type-toggle" style="margin-bottom: 0; padding: 2px;">
+                        <input type="checkbox" id="profile-availability" checked>
+                        <label for="profile-availability" id="availability-label" style="padding: 5px 10px; font-size: 0.75rem;">Available</label>
+                    </label>
+                </div>
+
+                <a href="profile.html" class="btn-hero-secondary" style="width: 100%; display: block; text-align: center;">Edit Profile</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-bell"></i> Notifications</h3>
+                <div class="notification-list" id="notification-list">
+                    <div class="notification-item">
+                        Welcome to BloodCare! Complete your profile to start.
+                        <span class="notification-time">2 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Welcome Section -->
+            <section class="welcome-banner">
+                <h2 id="welcome-greeting">Hello, User!</h2>
+                <p id="motivational-message">Your kindness is a gift to the world. A single donation can save up to three lives.</p>
+            </section>
+
+            <!-- Quick Actions -->
+            <section>
+                <h3 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="quick-actions-grid">
+                    <a href="profile.html" class="action-card">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Update Donor Status</span>
+                    </a>
+                    <a href="search.html" class="action-card">
+                        <i class="fas fa-search"></i>
+                        <span>Search Donors</span>
+                    </a>
+                    <a href="request-blood.html" class="action-card">
+                        <i class="fas fa-hand-holding-droplet"></i>
+                        <span>Request Blood</span>
+                    </a>
+                    <a href="#blood-bank" class="action-card">
+                        <i class="fas fa-hospital"></i>
+                        <span>Blood Bank</span>
+                    </a>
+                    <a href="#history" class="action-card">
+                        <i class="fas fa-history"></i>
+                        <span>View History</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Active Requests -->
+            <section id="requests" class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-list-check"></i> My Active Requests</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Blood Group</th>
+                                <th>Units</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-requests-table">
+                            <!-- Dynamically loaded -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section id="history" class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>Details</th>
+                                <th>Date</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table">
+                            <tr>
+                                <td>Registration</td>
+                                <td>Joined the community</td>
+                                <td>24 Apr 2026</td>
+                                <td>+50</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar: Emergencies -->
+        <aside class="dashboard-right">
+            <div class="dashboard-card">
+                <h3 class="card-title" style="color: var(--primary-red);"><i class="fas fa-triangle-exclamation"></i> Emergency Needs</h3>
+                <div class="emergency-list" id="emergency-list">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <div class="dashboard-card" style="margin-top: 30px; background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%); color: white;">
+                <h3 class="card-title" style="color: white; margin-bottom: 15px;"><i class="fas fa-medal"></i> Impact Level</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.9;">You are a <strong>Bronze Hero</strong>. Save 2 more lives to reach Silver!</p>
+                <div style="height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
+                    <div style="width: 33%; height: 100%; background: white;"></div>
+                </div>
+                <span style="font-size: 0.75rem; margin-top: 8px; display: block; text-align: right;">1/3 Lives Saved</span>
+            </div>
+        </aside>
+    </main>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script src="script.js"></script>
+    <script>
+        function getDisplayName(user) {
+            if (user.fullName && user.fullName.trim() !== "") {
+                return user.fullName;
+            }
+            
+            // Fallback: Use username or part of email before @
+            let name = user.username || "";
+            if (name.includes("@")) {
+                name = name.split("@")[0];
+            }
+            
+            // Capitalize first letter
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `notification-item`;
+            toast.style.backgroundColor = type === 'success' ? '#f0fdf4' : '#fef2f2';
+            toast.style.borderLeftColor = type === 'success' ? '#22c55e' : '#ef4444';
+            toast.style.boxShadow = 'var(--shadow-lg)';
+            toast.style.marginBottom = '10px';
+            toast.style.minWidth = '250px';
+            toast.style.animation = 'slideInRight 0.3s ease-out';
+            
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="color: ${type === 'success' ? '#22c55e' : '#ef4444'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            
+            // Set UI details
+            const displayName = getDisplayName(user);
+            document.getElementById('nav-user-name').textContent = displayName;
+            document.getElementById('welcome-greeting').textContent = `Hello, ${displayName}!`;
+            document.getElementById('logout-btn').onclick = () => {
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            };
+
+            // Load Profile Data
+            try {
+                const response = await fetch(`${BASE_URL}/api/user/profile/${user.username}`);
+                if (response.ok) {
+                    const profile = await response.json();
+                    const finalName = profile.fullName || displayName;
+                    document.getElementById('profile-name').textContent = finalName;
+                    document.getElementById('profile-blood-group').textContent = profile.bloodGroup || 'Not Set';
+                    document.getElementById('profile-city').textContent = profile.city || 'Not Set';
+                    document.getElementById('profile-last-donation').textContent = profile.lastDonationDate || 'Never';
+                    document.getElementById('profile-availability').checked = profile.availableToDonate;
+                    document.getElementById('profile-initials').textContent = finalName.charAt(0).toUpperCase();
+                    
+                    const availLabel = document.getElementById('availability-label');
+                    availLabel.textContent = profile.availableToDonate ? 'Available' : 'Unavailable';
+                    availLabel.style.color = profile.availableToDonate ? 'var(--primary-red)' : '#666';
+                }
+            } catch (err) { console.error('Profile load error:', err); }
+
+            // Load My Requests
+            try {
+                const response = await fetch(`${BASE_URL}/api/blood-requests/my-requests/${user.username}`);
+                if (response.ok) {
+                    const requests = await response.json();
+                    const tableBody = document.getElementById('my-requests-table');
+                    if (requests.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No requests found</td></tr>';
+                    } else {
+                        tableBody.innerHTML = requests.map(req => `
+                            <tr>
+                                <td><strong>${req.patientName || 'N/A'}</strong></td>
+                                <td>${req.bloodGroup}</td>
+                                <td>${req.unitsRequired || 1} Units</td>
+                                <td>${req.requestDate ? new Date(req.requestDate).toLocaleDateString() : 'Recently'}</td>
+                                <td><span class="status-badge status-${req.status.toLowerCase()}">${req.status}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (err) { console.error('Requests load error:', err); }
+
+            // Load Emergencies
+            try {
+                const response = await fetch(`${BASE_URL}/api/blood-requests/active`);
+                if (response.ok) {
+                    const emergencies = await response.json();
+                    const emerList = document.getElementById('emergency-list');
+                    if (emergencies.length === 0) {
+                        emerList.innerHTML = '<p style="font-size: 0.9rem; color: var(--slate-gray);">No active emergencies.</p>';
+                    } else {
+                        emerList.innerHTML = emergencies.slice(0, 3).map(req => `
+                            <div class="emergency-item">
+                                <h4><i class="fas fa-droplet"></i> ${req.bloodGroup} Required</h4>
+                                <p>${req.hospitalName}, ${req.city}</p>
+                                <a href="tel:${req.contactNumber}" class="btn-nav-primary" style="padding: 8px 15px; font-size: 0.8rem; width: 100%; justify-content: center;">
+                                    <i class="fas fa-phone"></i> Donate Now
+                                </a>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (err) { console.error('Emergencies load error:', err); }
+
+            // Handle Availability Toggle
+            const availabilityToggle = document.getElementById('profile-availability');
+            availabilityToggle.addEventListener('change', async (e) => {
+                const isAvailable = e.target.checked;
+                const availLabel = document.getElementById('availability-label');
+                
+                try {
+                    const response = await fetch(`${BASE_URL}/api/user/availability/${user.username}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isAvailable: isAvailable })
+                    });
+
+                    if (response.ok) {
+                        availLabel.textContent = isAvailable ? 'Available' : 'Unavailable';
+                        availLabel.style.color = isAvailable ? 'var(--primary-red)' : '#666';
+                        showToast(`Status updated: You are now ${isAvailable ? 'available' : 'unavailable'} to donate.`, 'success');
+                    } else {
+                        const errorMsg = await response.text();
+                        // Revert toggle on error
+                        availabilityToggle.checked = !isAvailable;
+                        showToast(errorMsg || 'Failed to update status.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Update availability error:', err);
+                    availabilityToggle.checked = !isAvailable;
+                    showToast('An error occurred. Please try again.', 'error');
+                }
+            });
+
+            // Random motivational message
+            const messages = [
+                "Your kindness is a gift to the world.",
+                "Be the reason someone smiles today.",
+                "Every drop counts in saving a life.",
+                "Heroes don't always wear capes, some donate blood.",
+                "You have the power to save lives in your veins."
+            ];
+            document.getElementById('motivational-message').textContent = messages[Math.floor(Math.random() * messages.length)];
+        });
+    </script>
+</body>
+</html>

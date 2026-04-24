@@ -21,14 +21,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/"), 
-                               new AntPathRequestMatcher("/*.html"), 
-                               new AntPathRequestMatcher("/style.css"), 
-                               new AntPathRequestMatcher("/script.js"), 
-                               new AntPathRequestMatcher("/api/auth/**"),
-                               new AntPathRequestMatcher("/api/user/**")).permitAll()
+                .requestMatchers(
+                    "/", 
+                    "/*.html", 
+                    "/login", 
+                    "/register", 
+                    "/profile",
+                    "/style.css", 
+                    "/script.js", 
+                    "/api/auth/**",
+                    "/api/user/**",
+                    "/api/blood-requests/**",
+                    "/api/donors/**",
+                    "/api/home/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

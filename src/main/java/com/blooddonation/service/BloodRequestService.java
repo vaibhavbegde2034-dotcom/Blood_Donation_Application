@@ -29,7 +29,9 @@ public class BloodRequestService {
 
         BloodRequest request = new BloodRequest();
         request.setRequester(requester);
+        request.setPatientName(dto.getPatientName());
         request.setBloodGroup(dto.getBloodGroup());
+        request.setUnitsRequired(dto.getUnitsRequired());
         request.setCity(dto.getCity());
         request.setHospitalName(dto.getHospitalName());
         request.setContactNumber(dto.getContactNumber());
@@ -61,7 +63,9 @@ public class BloodRequestService {
     private BloodRequestDto convertToDto(BloodRequest request) {
         BloodRequestDto dto = new BloodRequestDto();
         dto.setId(request.getId());
+        dto.setPatientName(request.getPatientName());
         dto.setBloodGroup(request.getBloodGroup());
+        dto.setUnitsRequired(request.getUnitsRequired());
         dto.setCity(request.getCity());
         dto.setHospitalName(request.getHospitalName());
         dto.setContactNumber(request.getContactNumber());

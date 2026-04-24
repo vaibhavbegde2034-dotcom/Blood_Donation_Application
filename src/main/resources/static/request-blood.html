@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Blood | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .request-page {
+            background: #f4f7f6;
+            min-height: 100vh;
+            padding: 120px 0 60px;
+        }
+
+        .request-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header i {
+            font-size: 3rem;
+            color: var(--primary-red);
+            margin-bottom: 15px;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            color: var(--slate-dark);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="request-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="search.html">Search</a>
+            </nav>
+            <div class="nav-auth-actions">
+                <a href="dashboard.html" class="btn-nav-primary">My Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="request-container">
+        <div class="form-card">
+            <div class="form-header">
+                <i class="fas fa-hand-holding-droplet"></i>
+                <h2>Submit Blood Request</h2>
+                <p>Fill in the details for the patient in need.</p>
+            </div>
+
+            <form id="blood-request-form">
+                <div class="form-grid">
+                    <div class="auth-form-group full-width">
+                        <label>Patient Name</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="patientName" placeholder="Enter patient's full name" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>Blood Group Needed</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-droplet"></i>
+                            <select name="bloodGroup" required>
+                                <option value="">Select Group</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>Units Required</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-box"></i>
+                            <input type="number" name="unitsRequired" min="1" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>City</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" name="city" placeholder="e.g. Pune" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>Hospital Name</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-hospital"></i>
+                            <input type="text" name="hospitalName" placeholder="Hospital address" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>Contact Number</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="contactNumber" placeholder="Mobile number" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label>Urgency Level</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-clock"></i>
+                            <select name="urgency" required>
+                                <option value="URGENT">Urgent (Immediate)</option>
+                                <option value="WITHIN_24_HOURS">Within 24 Hours</option>
+                                <option value="WITHIN_3_DAYS">Within 3 Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group full-width">
+                        <label>Additional Information (Optional)</label>
+                        <div class="auth-input-wrap" style="height: auto;">
+                            <i class="fas fa-info-circle" style="align-self: flex-start; margin-top: 15px;"></i>
+                            <textarea name="description" rows="3" placeholder="Case details, specific instructions, etc." style="width: 100%; border: none; padding: 15px 45px; font-family: inherit; font-size: 0.95rem; resize: none;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <button type="submit" class="btn-nav-primary" style="width: 100%; height: 55px; justify-content: center; font-size: 1.1rem;">
+                        Submit Request
+                    </button>
+                    <a href="dashboard.html" class="btn-hero-secondary" style="width: 100%; display: block; text-align: center; margin-top: 15px;">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `notification-item`;
+            toast.style.backgroundColor = type === 'success' ? '#f0fdf4' : '#fef2f2';
+            toast.style.borderLeftColor = type === 'success' ? '#22c55e' : '#ef4444';
+            toast.style.boxShadow = 'var(--shadow-lg)';
+            toast.style.marginBottom = '10px';
+            toast.style.padding = '15px';
+            toast.style.borderRadius = '12px';
+            toast.style.minWidth = '250px';
+            
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="color: ${type === 'success' ? '#22c55e' : '#ef4444'}"></i>
+                    <span style="font-weight: 500;">${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        document.getElementById('blood-request-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.unitsRequired = parseInt(data.unitsRequired);
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/blood-requests/create/${user.username}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showToast('Request submitted successfully!', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+                } else {
+                    const error = await response.text();
+                    showToast(error || 'Submission failed.', 'error');
+                }
+            } catch (err) {
+                showToast('Server connection error.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Request';
+            }
+        });
+    </script>
+</body>
+</html>
