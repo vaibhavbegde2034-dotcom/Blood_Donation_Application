@@ -2,64 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
+    const bankRegisterForm = document.getElementById('bank-register-form');
     const passwordToggles = document.querySelectorAll('[data-toggle-password]');
     const statusMessage = document.getElementById('status-message');
     const navActions = document.getElementById('home-nav-actions');
     const activeRequestsList = document.getElementById('active-requests-list');
     const donorSearchForm = document.getElementById('donor-search-form');
     const searchResults = document.getElementById('search-results');
-
-    // Donor Search Logic
-    if (donorSearchForm) {
-        donorSearchForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const bloodGroup = document.getElementById('search-blood-group').value;
-            const city = document.getElementById('search-city').value;
-            performDonorSearch(bloodGroup, city);
-        });
-
-        // Initial search load
-        performDonorSearch('', '');
-    }
-
-    async function performDonorSearch(bloodGroup, city) {
-        if (!searchResults) return;
-        
-        try {
-            searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Finding life-savers...</p></div>';
-            
-            const params = new URLSearchParams();
-            if (bloodGroup) params.append('bloodGroup', bloodGroup);
-            if (city) params.append('city', city);
-            
-            const response = await fetch(`${BASE_URL}/api/donors/search?${params.toString()}`);
-            if (response.ok) {
-                const donors = await response.json();
-                
-                if (donors.length === 0) {
-                    searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-search fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No donors found matching your criteria. Try a different city or blood group.</p></div>';
-                    return;
-                }
-
-                searchResults.innerHTML = donors.map(donor => `
-                    <article class="feature-panel" style="text-align: center;">
-                        <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <span class="blood-badge" style="background: rgba(230, 57, 70, 0.1); color: var(--primary-red); padding: 4px 12px; border-radius: 100px; font-weight: 700; font-size: 0.8rem;">${donor.bloodGroup}</span>
-                        <h3 style="margin: 15px 0 5px; font-size: 1.2rem;">${donor.fullName || 'Hero Donor'}</h3>
-                        <p style="font-size: 0.9rem; color: var(--slate-gray); margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> ${donor.city || 'Location Hidden'}</p>
-                        <div style="padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #166534;">STATUS: AVAILABLE</span>
-                        </div>
-                    </article>
-                `).join('');
-            }
-        } catch (error) {
-            console.error('Search failed:', error);
-            searchResults.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--primary-red);">Failed to connect to the server. Please try again later.</p>';
-        }
-    }
 
     // Password Visibility Toggle
     passwordToggles.forEach(toggle => {
@@ -69,8 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (input) {
                 const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
                 input.setAttribute('type', type);
-                toggle.querySelector('i').classList.toggle('fa-eye');
-                toggle.querySelector('i').classList.toggle('fa-eye-slash');
+                const icon = toggle.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                }
             }
         });
     });
@@ -107,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error:', error);
                 errorElement.textContent = 'An error occurred. Please try again later.';
                 errorElement.style.display = 'block';
-                errorElement.className = 'auth-feedback auth-feedback-error';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Login</span> <i class="fas fa-arrow-right"></i>';
@@ -120,6 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const formData = new FormData(registerForm);
             const data = Object.fromEntries(formData.entries());
+            
+            // Get userType from the radio toggle in HTML
+            const regType = document.querySelector('input[name="regType"]:checked').value;
+            data.userType = regType;
+
             const messageElement = document.getElementById('register-message');
             const submitBtn = registerForm.querySelector('button[type="submit"]');
 
@@ -138,16 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageElement.textContent = msg + '. Redirecting to login...';
                     messageElement.className = 'auth-feedback auth-feedback-success';
                     messageElement.style.display = 'block';
-                    messageElement.style.background = '#f1fdf4';
-                    messageElement.style.color = '#166534';
                     setTimeout(() => window.location.href = 'login.html', 2000);
                 } else {
                     const errorMsg = await response.text();
-                    messageElement.textContent = errorMsg || 'Registration failed. Check your inputs.';
+                    messageElement.textContent = errorMsg || 'Registration failed.';
                     messageElement.className = 'auth-feedback auth-feedback-error';
                     messageElement.style.display = 'block';
-                    messageElement.style.background = '#fff1f1';
-                    messageElement.style.color = '#c1121f';
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -156,12 +108,96 @@ document.addEventListener('DOMContentLoaded', () => {
                 messageElement.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Register & Save Lives</span> <i class="fas fa-heart"></i>';
+                const label = document.getElementById('user-type-label').textContent;
+                submitBtn.innerHTML = `<span>Register as ${label}</span> <i class="fas fa-heart"></i>`;
             }
         });
     }
 
-    // Auth State Management
+    if (bankRegisterForm) {
+        bankRegisterForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(bankRegisterForm);
+            const data = Object.fromEntries(formData.entries());
+            const messageElement = document.getElementById('register-message');
+            const submitBtn = bankRegisterForm.querySelector('button[type="submit"]');
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering Blood Bank...';
+
+                const response = await fetch(`${BASE_URL}/bloodbank/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.status) {
+                    messageElement.textContent = result.message + '. Redirecting to login...';
+                    messageElement.className = 'auth-feedback auth-feedback-success';
+                    messageElement.style.display = 'block';
+                    setTimeout(() => window.location.href = 'login.html', 2000);
+                } else {
+                    messageElement.textContent = result.message || 'Registration failed.';
+                    messageElement.className = 'auth-feedback auth-feedback-error';
+                    messageElement.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageElement.textContent = 'An error occurred. Please try again.';
+                messageElement.className = 'auth-feedback auth-feedback-error';
+                messageElement.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Register Blood Bank</span> <i class="fas fa-shield-halved"></i>';
+            }
+        });
+    }
+
+    // Donor Search Logic
+    if (donorSearchForm) {
+        donorSearchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bloodGroup = document.getElementById('search-blood-group').value;
+            const city = document.getElementById('search-city').value;
+            performDonorSearch(bloodGroup, city);
+        });
+        performDonorSearch('', '');
+    }
+
+    async function performDonorSearch(bloodGroup, city) {
+        if (!searchResults) return;
+        try {
+            searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Finding life-savers...</p></div>';
+            const params = new URLSearchParams();
+            if (bloodGroup) params.append('bloodGroup', bloodGroup);
+            if (city) params.append('city', city);
+            const response = await fetch(`${BASE_URL}/api/donors/search?${params.toString()}`);
+            if (response.ok) {
+                const donors = await response.json();
+                if (donors.length === 0) {
+                    searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-search fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No donors found matching your criteria.</p></div>';
+                    return;
+                }
+                searchResults.innerHTML = donors.map(donor => `
+                    <article class="feature-panel" style="text-align: center;">
+                        <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <span class="blood-badge" style="background: rgba(230, 57, 70, 0.1); color: var(--primary-red); padding: 4px 12px; border-radius: 100px; font-weight: 700; font-size: 0.8rem;">${donor.bloodGroup}</span>
+                        <h3 style="margin: 15px 0 5px; font-size: 1.2rem;">${donor.fullName || 'Hero Donor'}</h3>
+                        <p style="font-size: 0.9rem; color: var(--slate-gray); margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> ${donor.city || 'Location Hidden'}</p>
+                        <div style="padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #166534;">STATUS: AVAILABLE</span>
+                        </div>
+                    </article>
+                `).join('');
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    // Auth State
     if (statusMessage) {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
@@ -179,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Load Statistics and Requests
+    // Stats
     if (document.getElementById('total-donors-count')) {
         loadHomeStats();
         loadActiveRequests();
@@ -194,9 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 animateCounter('lives-saved-count', stats.livesSaved || 0);
                 animateCounter('active-request-count', stats.activeRequests || 0);
             }
-        } catch (error) {
-            console.error('Stats loading failed:', error);
-        }
+        } catch (error) { console.error(error); }
     }
 
     async function loadActiveRequests() {
@@ -206,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const requests = await response.json();
                 if (requests.length === 0) {
-                    activeRequestsList.innerHTML = '<p style="text-align: center; color: var(--slate-gray);">No active emergency requests right now.</p>';
+                    activeRequestsList.innerHTML = '<p style="text-align: center; color: var(--slate-gray);">No active emergency requests.</p>';
                     return;
                 }
                 activeRequestsList.innerHTML = requests.map(req => `
@@ -219,9 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `).join('');
             }
-        } catch (error) {
-            console.error('Requests loading failed:', error);
-        }
+        } catch (error) { console.error(error); }
     }
 
     function animateCounter(id, target) {
@@ -229,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!el) return;
         let current = 0;
         const duration = 2000;
-        const stepTime = Math.abs(Math.floor(duration / target));
+        const stepTime = Math.abs(Math.floor(duration / target)) || 50;
         const timer = setInterval(() => {
             current += 1;
             el.textContent = current;
@@ -237,6 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.textContent = target;
                 clearInterval(timer);
             }
-        }, stepTime || 50);
+        }, stepTime);
     }
 });

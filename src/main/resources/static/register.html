@@ -46,14 +46,19 @@
                         <p>Join our mission and help those in need</p>
                     </div>
 
-                    <form id="register-form" class="auth-form-modern">
-                        <div class="type-toggle">
-                            <input type="radio" name="userType" id="type-donor" value="DONOR" checked>
-                            <label for="type-donor">Register as Donor</label>
-                            <input type="radio" name="userType" id="type-requester" value="REQUESTER">
-                            <label for="type-requester">Register as Requester</label>
+                    <!-- Type Toggle -->
+                    <div class="type-toggle-container" style="margin-bottom: 25px;">
+                        <div class="type-toggle-dual" style="display: grid; grid-template-columns: 1fr 1fr; background: #f1f5f9; padding: 6px; border-radius: 12px; gap: 5px;">
+                            <input type="radio" name="regType" id="reg-user" value="USER" checked style="display: none;">
+                            <label for="reg-user" style="text-align: center; padding: 12px 10px; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 0.9rem; color: #64748b;">User</label>
+                            
+                            <input type="radio" name="regType" id="reg-bank" value="BLOOD_BANK" style="display: none;">
+                            <label for="reg-bank" style="text-align: center; padding: 12px 10px; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 0.9rem; color: #64748b;">Blood Bank</label>
                         </div>
+                    </div>
 
+                    <!-- User Form (Combined) -->
+                    <form id="register-form" class="auth-form-modern">
                         <div class="auth-form-group">
                             <label for="fullName">Full Name</label>
                             <div class="auth-input-wrap">
@@ -117,20 +122,87 @@
                             <span>Register & Save Lives</span>
                             <i class="fas fa-heart"></i>
                         </button>
+                    </form>
 
-                        <p class="motivational-line">"Your small step can make a big difference"</p>
+                    <!-- Blood Bank Form -->
+                    <form id="bank-register-form" class="auth-form-modern" style="display: none;">
+                        <div class="auth-form-group">
+                            <label for="bankName">Blood Bank Name</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-hospital"></i>
+                                <input type="text" id="bankName" name="bankName" placeholder="City Blood Center" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="bankLocation">Location / Address</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-map-pin"></i>
+                                <input type="text" id="bankLocation" name="location" placeholder="Main Road, Pune" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="bankContact">Contact Number</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-phone-alt"></i>
+                                <input type="tel" id="bankContact" name="contactNumber" placeholder="020-1234567" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="bankEmail">Email Address</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="bankEmail" name="email" placeholder="admin@cityblood.com" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="bankPassword">Password</label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="bankPassword" name="password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn glowing-pulse">
+                            <span>Register Blood Bank</span>
+                            <i class="fas fa-shield-halved"></i>
+                        </button>
                     </form>
 
                     <p id="register-message" class="auth-feedback" style="display: none;"></p>
 
                     <div class="auth-footer-row">
-                        <span>Already a donor?</span>
+                        <span>Already have an account?</span>
                         <a href="login.html">Login here</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
     <script src="script.js"></script>
+    <script>
+        // Registration Type Switching Logic
+        const regUser = document.getElementById('reg-user');
+        const regBank = document.getElementById('reg-bank');
+        const userForm = document.getElementById('register-form');
+        const bankForm = document.getElementById('bank-register-form');
+
+        function switchType() {
+            if (regBank.checked) {
+                userForm.style.display = 'none';
+                bankForm.style.display = 'block';
+            } else {
+                userForm.style.display = 'block';
+                bankForm.style.display = 'none';
+            }
+        }
+
+        regUser.addEventListener('change', switchType);
+        regBank.addEventListener('change', switchType);
+    </script>
 </body>
 </html>

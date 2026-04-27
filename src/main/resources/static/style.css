@@ -1273,3 +1273,48 @@ body {
         order: 2;
     }
 }
+
+/* Registration Type Toggles */
+.type-toggle-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #f1f5f9;
+    padding: 6px;
+    border-radius: 12px;
+    gap: 5px;
+}
+
+.type-toggle-dual input {
+    display: none;
+}
+
+.type-toggle-dual label {
+    text-align: center;
+    padding: 12px 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #64748b;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.type-toggle-dual input:checked + label {
+    background: white;
+    color: var(--primary-red);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.auth-feedback-success {
+    background: #f1fdf4 !important;
+    color: #166534 !important;
+    border-left: 4px solid #22c55e;
+}
+
+.auth-feedback-error {
+    background: #fff1f1 !important;
+    color: #c1121f !important;
+    border-left: 4px solid #c1121f;
+}
+
