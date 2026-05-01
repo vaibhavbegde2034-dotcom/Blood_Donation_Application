@@ -39,6 +39,9 @@ public class BloodRequest {
     @Column(nullable = false)
     private String status; // PENDING, APPROVED, REJECTED, COMPLETED
 
+    @Column(nullable = false)
+    private String requesterName;
+
     private String description;
 
     @Column(nullable = false)
@@ -75,6 +78,9 @@ public class BloodRequest {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getRequesterName() { return requesterName; }
+    public void setRequesterName(String requesterName) { this.requesterName = requesterName; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

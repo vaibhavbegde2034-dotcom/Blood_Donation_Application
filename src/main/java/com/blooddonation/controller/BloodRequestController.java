@@ -1,5 +1,6 @@
 package com.blooddonation.controller;
 
+import com.blooddonation.dto.ApiResponseDto;
 import com.blooddonation.dto.BloodRequestDto;
 import com.blooddonation.service.BloodRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,20 @@ public class BloodRequestController {
     @GetMapping("/active")
     public ResponseEntity<List<BloodRequestDto>> getAllActiveRequests() {
         return ResponseEntity.ok(bloodRequestService.getAllActiveRequests());
+    }
+
+    @GetMapping("/city/{city}")
+    public ResponseEntity<List<BloodRequestDto>> getRequestsByCity(@PathVariable String city) {
+        return ResponseEntity.ok(bloodRequestService.getRequestsByCity(city));
+    }
+
+    @PutMapping("/{id}/accept")
+    public ResponseEntity<ApiResponseDto> acceptRequest(@PathVariable Long id, @RequestParam Long bloodBankId) {
+        return ResponseEntity.ok(bloodRequestService.acceptRequest(id, bloodBankId));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<ApiResponseDto> rejectRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(bloodRequestService.rejectRequest(id));
     }
 }

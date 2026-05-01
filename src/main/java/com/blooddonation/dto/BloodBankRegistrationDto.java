@@ -9,6 +9,9 @@ public class BloodBankRegistrationDto {
     @NotBlank(message = "Location is required")
     private String location;
 
+    @NotBlank(message = "City is required")
+    private String city;
+
     @NotBlank(message = "Contact number is required")
     private String contactNumber;
 
@@ -27,6 +30,9 @@ public class BloodBankRegistrationDto {
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
 
     public String getContactNumber() { return contactNumber; }
     public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }

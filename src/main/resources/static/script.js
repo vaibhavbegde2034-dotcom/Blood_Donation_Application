@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
                 
-                const response = await fetch(`${BASE_URL}/api/auth/login`, {
+                // Try normal user login first, if it fails with 401, try blood bank login
+                let response = await fetch(`${BASE_URL}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -49,11 +50,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     const result = await response.json();
                     localStorage.setItem('user', JSON.stringify(result));
                     window.location.href = 'dashboard.html';
+                } else if (response.status === 401) {
+                    // Try Blood Bank Login
+                    const bankResponse = await fetch(`${BASE_URL}/api/bloodbank/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (bankResponse.ok) {
+                        const result = await bankResponse.json();
+                        localStorage.setItem('user', JSON.stringify(result));
+                        window.location.href = 'bank-dashboard.html';
+                    } else {
+                        const errorMsg = await bankResponse.text();
+                        errorElement.textContent = errorMsg || 'Login failed. Please check your credentials.';
+                        errorElement.style.display = 'block';
+                        errorElement.className = 'auth-feedback auth-feedback-error';
+                    }
                 } else {
                     const errorMsg = await response.text();
-                    errorElement.textContent = errorMsg || 'Login failed. Please check your credentials.';
+                    errorElement.textContent = errorMsg || 'Login failed.';
                     errorElement.style.display = 'block';
-                    errorElement.className = 'auth-feedback auth-feedback-error';
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -126,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering Blood Bank...';
 
-                const response = await fetch(`${BASE_URL}/bloodbank/register`, {
+                const response = await fetch(`${BASE_URL}/api/bloodbank/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -169,31 +187,65 @@ document.addEventListener('DOMContentLoaded', () => {
     async function performDonorSearch(bloodGroup, city) {
         if (!searchResults) return;
         try {
-            searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Finding life-savers...</p></div>';
+            searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Finding life-savers and banks...</p></div>';
+            
+            // Fetch Donors
             const params = new URLSearchParams();
             if (bloodGroup) params.append('bloodGroup', bloodGroup);
             if (city) params.append('city', city);
-            const response = await fetch(`${BASE_URL}/api/donors/search?${params.toString()}`);
-            if (response.ok) {
-                const donors = await response.json();
-                if (donors.length === 0) {
-                    searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-search fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No donors found matching your criteria.</p></div>';
-                    return;
+            const donorResponse = await fetch(`${BASE_URL}/api/donors/search?${params.toString()}`);
+            
+            // Fetch Blood Bank Stock if blood group is selected
+            let stockResults = [];
+            if (bloodGroup) {
+                const stockParams = new URLSearchParams();
+                stockParams.append('bloodGroup', bloodGroup);
+                if (city) stockParams.append('city', city);
+                const stockResponse = await fetch(`${BASE_URL}/api/blood-stock/search?${stockParams.toString()}`);
+                if (stockResponse.ok) {
+                    stockResults = await stockResponse.json();
                 }
-                searchResults.innerHTML = donors.map(donor => `
-                    <article class="feature-panel" style="text-align: center;">
-                        <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <span class="blood-badge" style="background: rgba(230, 57, 70, 0.1); color: var(--primary-red); padding: 4px 12px; border-radius: 100px; font-weight: 700; font-size: 0.8rem;">${donor.bloodGroup}</span>
-                        <h3 style="margin: 15px 0 5px; font-size: 1.2rem;">${donor.fullName || 'Hero Donor'}</h3>
-                        <p style="font-size: 0.9rem; color: var(--slate-gray); margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> ${donor.city || 'Location Hidden'}</p>
-                        <div style="padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #166534;">STATUS: AVAILABLE</span>
-                        </div>
-                    </article>
-                `).join('');
             }
+
+            let donors = [];
+            if (donorResponse.ok) {
+                donors = await donorResponse.json();
+            }
+
+            if (donors.length === 0 && stockResults.length === 0) {
+                searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-search fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No donors or blood banks found matching your criteria.</p></div>';
+                return;
+            }
+
+            const donorCards = donors.map(donor => `
+                <article class="feature-panel" style="text-align: center;">
+                    <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <span class="blood-badge" style="background: rgba(230, 57, 70, 0.1); color: var(--primary-red); padding: 4px 12px; border-radius: 100px; font-weight: 700; font-size: 0.8rem;">${donor.bloodGroup}</span>
+                    <h3 style="margin: 15px 0 5px; font-size: 1.2rem;">${donor.fullName || 'Hero Donor'}</h3>
+                    <p style="font-size: 0.9rem; color: var(--slate-gray); margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> ${donor.city || 'Location Hidden'}</p>
+                    <div style="padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: #166534;">DONOR AVAILABLE</span>
+                    </div>
+                </article>
+            `).join('');
+
+            const bankCards = stockResults.map(stock => `
+                <article class="feature-panel" style="text-align: center; border: 1px solid var(--primary-red);">
+                    <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(230, 57, 70, 0.1); color: var(--primary-red);">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <span class="blood-badge" style="background: var(--primary-red); color: white; padding: 4px 12px; border-radius: 100px; font-weight: 700; font-size: 0.8rem;">${stock.bloodGroup}</span>
+                    <h3 style="margin: 15px 0 5px; font-size: 1.2rem;">${stock.bloodBankName}</h3>
+                    <p style="font-size: 0.9rem; color: var(--slate-gray); margin-bottom: 15px;"><i class="fas fa-warehouse"></i> In Stock: ${stock.units} Units</p>
+                    <div style="padding: 10px; background: #fef2f2; border-radius: 12px; border: 1px solid #fee2e2;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary-red);">BLOOD BANK</span>
+                    </div>
+                </article>
+            `).join('');
+
+            searchResults.innerHTML = bankCards + donorCards;
         } catch (error) { console.error(error); }
     }
 

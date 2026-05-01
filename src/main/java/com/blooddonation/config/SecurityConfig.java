@@ -37,7 +37,8 @@ public class SecurityConfig {
                     "/api/blood-requests/**",
                     "/api/donors/**",
                     "/api/home/**",
-                    "/bloodbank/register"
+                    "/api/bloodbank/**",
+                    "/api/blood-stock/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )

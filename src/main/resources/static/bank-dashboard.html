@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Management Dashboard | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .bank-dashboard {
+            background: #f8fafc;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+
+        .inventory-hero {
+            background: linear-gradient(135deg, var(--slate-dark) 0%, #1e293b 100%);
+            border-radius: 30px;
+            padding: 50px;
+            color: white;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inventory-hero::before {
+            content: '\f471';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 15rem;
+            opacity: 0.05;
+            transform: rotate(15deg);
+        }
+
+        .hero-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .hero-info p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .stock-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-details h4 {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-details span {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--slate-dark);
+        }
+
+        /* Blood Groups Grid */
+        .blood-groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .blood-vial-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .blood-vial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .vial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .vial-type {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-red);
+        }
+
+        .vial-status {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+
+        .status-stable { background: #f0fdf4; color: #16a34a; }
+        .status-low { background: #fff1f2; color: #e11d48; }
+
+        .vial-progress-container {
+            height: 120px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #f1f5f9;
+        }
+
+        .vial-progress-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(0deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vial-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 100%;
+            transform: translateY(-50%);
+        }
+
+        .units-display {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--slate-dark);
+        }
+
+        .update-form-inline {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .update-form-inline input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+            font-size: 0.9rem;
+            width: 80px;
+        }
+
+        .update-form-inline button {
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: var(--slate-dark);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .update-form-inline button:hover {
+            background: var(--primary-red);
+        }
+
+        .glass-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid #eee;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            color: var(--primary-red-dark);
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body class="bank-dashboard">
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-heart-pulse pulse"></i>
+                <span>BloodCare <span style="font-weight: 400; color: #64748b;">| Bank</span></span>
+            </a>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+                <button id="show-inventory" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem; border: none; background: transparent;">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </button>
+                <button id="show-profile" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem; border: none; background: transparent;">
+                    <i class="fas fa-user-cog"></i> Profile
+                </button>
+                <span id="bank-name-display" style="font-weight: 600; color: var(--slate-dark);"></span>
+                <button id="logout-btn" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="site-shell" id="inventory-section">
+        <section class="inventory-hero">
+            <div class="hero-info">
+                <span class="hero-label" style="background: rgba(255,255,255,0.1); color: white;" id="hero-bank-label">Authorized Blood Bank</span>
+                <h1 id="hero-bank-name-heading">Blood Bank Name</h1>
+                <p id="hero-bank-details">Location & Contact Details</p>
+            </div>
+            <div class="hero-actions">
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; text-align: right;">
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Status</div>
+                    <div style="font-size: 1.2rem; font-weight: 700;"><i class="fas fa-circle" style="color: #22c55e; font-size: 0.8rem;"></i> Operational</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stock-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #eff6ff; color: #2563eb;"><i class="fas fa-droplet"></i></div>
+                <div class="stat-details">
+                    <h4>Total Units</h4>
+                    <span id="total-units-stat">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef2f2; color: #dc2626;"><i class="fas fa-triangle-exclamation"></i></div>
+                <div class="stat-details">
+                    <h4>Low Stock Alerts</h4>
+                    <span id="low-stock-count">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;"><i class="fas fa-clock-rotate-left"></i></div>
+                <div class="stat-details">
+                    <h4>Last Updated</h4>
+                    <span style="font-size: 1.1rem;" id="last-update-time">Just now</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="emergency-requests-section" style="margin-bottom: 50px; display: none;">
+            <div class="section-head" style="text-align: left; margin-bottom: 30px;">
+                <h2 style="color: var(--primary-red);"><i class="fas fa-triangle-exclamation"></i> Local Emergency Requests</h2>
+                <p>Urgent blood requirements in your city. Contact them if you have stock.</p>
+            </div>
+            <div id="emergency-feed" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <div class="section-head" style="text-align: left; margin-bottom: 40px;">
+            <h2>Blood Inventory</h2>
+            <p>Directly manage each blood group's supply levels.</p>
+        </div>
+
+        <div class="blood-groups-grid" id="inventory-grid">
+            <!-- Populated by JS -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-red);"></i>
+            </div>
+        </div>
+    </main>
+
+    <main class="site-shell" id="profile-section" style="display: none;">
+        <section class="inventory-hero" style="background: linear-gradient(135deg, var(--primary-red-dark) 0%, var(--primary-red) 100%);">
+            <div class="hero-info">
+                <span class="hero-label" style="background: rgba(255,255,255,0.2); color: white;">Settings</span>
+                <h1>Profile Management</h1>
+                <p>Update your blood bank's public information and contact details.</p>
+            </div>
+        </section>
+
+        <div class="auth-card" style="max-width: 600px; margin: 0 auto; padding: 40px; box-shadow: var(--shadow-md); border-radius: 30px;">
+            <form id="profile-update-form" class="auth-form-modern">
+                <div class="auth-form-group">
+                    <label for="bankName">Blood Bank Name</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-hospital"></i>
+                        <input type="text" id="profile-bankName" name="bankName" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="location">Location / Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-map-pin"></i>
+                        <input type="text" id="profile-location" name="location" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="city">City</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-city"></i>
+                        <input type="text" id="profile-city" name="city" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="contactNumber">Contact Number</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="profile-contactNumber" name="contactNumber" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="email">Email Address (Read Only)</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="profile-email" name="email" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="password">New Password (leave blank to keep current)</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="profile-password" name="password" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit-btn glowing-pulse" id="update-profile-btn">
+                    <span>Save Changes</span>
+                    <i class="fas fa-check-circle"></i>
+                </button>
+            </form>
+            <div id="profile-update-message" class="auth-feedback" style="display: none; margin-top: 20px;"></div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || user.userType !== 'BLOOD_BANK') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            
+            // Tab Switching
+            const invSection = document.getElementById('inventory-section');
+            const profSection = document.getElementById('profile-section');
+            const showInvBtn = document.getElementById('show-inventory');
+            const showProfBtn = document.getElementById('show-profile');
+
+            const switchTab = (tab) => {
+                if (tab === 'inventory') {
+                    invSection.style.display = 'block';
+                    profSection.style.display = 'none';
+                    showInvBtn.style.color = 'var(--primary-red)';
+                    showProfBtn.style.color = 'var(--slate-dark)';
+                    loadInventory();
+                    loadEmergencyRequests();
+                } else {
+                    invSection.style.display = 'none';
+                    profSection.style.display = 'block';
+                    showInvBtn.style.color = 'var(--slate-dark)';
+                    showProfBtn.style.color = 'var(--primary-red)';
+                    loadProfileData();
+                }
+            };
+
+            showInvBtn.onclick = () => switchTab('inventory');
+            showProfBtn.onclick = () => switchTab('profile');
+            
+            // Initial UI state
+            document.getElementById('bank-name-display').textContent = user.bankName;
+            document.getElementById('hero-bank-name-heading').textContent = user.bankName;
+            document.getElementById('hero-bank-details').textContent = `Location: ${user.location} | Contact: ${user.contactNumber}`;
+            
+            switchTab('inventory'); // Start with inventory
+
+            document.getElementById('logout-btn').onclick = () => {
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            };
+
+            // Inventory Logic
+            const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+            const inventoryGrid = document.getElementById('inventory-grid');
+            
+            const loadInventory = async () => {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/blood-stock/bank/${user.id}`);
+                    if (response.ok) {
+                        const stocks = await response.json();
+                        const stockMap = {};
+                        stocks.forEach(s => stockMap[s.bloodGroup] = s.units);
+                        
+                        let totalUnits = 0;
+                        let lowStockCount = 0;
+
+                        inventoryGrid.innerHTML = bloodGroups.map(bg => {
+                            const units = stockMap[bg] || 0;
+                            totalUnits += units;
+                            if (units < 5) lowStockCount++;
+                            
+                            const fillHeight = Math.min((units / 20) * 100, 100); 
+                            
+                            return `
+                                <article class="blood-vial-card">
+                                    <div class="vial-header">
+                                        <div class="vial-type">${bg}</div>
+                                        <span class="vial-status ${units > 5 ? 'status-stable' : 'status-low'}">
+                                            ${units > 5 ? 'Stable' : 'Low Stock'}
+                                        </span>
+                                    </div>
+                                    <div class="vial-progress-container">
+                                        <div class="vial-progress-fill" style="height: ${fillHeight}%"></div>
+                                    </div>
+                                    <div class="units-display">${units} Units Available</div>
+                                    <form class="update-form-inline" onsubmit="handleUpdate(event, '${bg}')">
+                                        <input type="number" value="${units}" min="0" required id="input-${bg.replace('+', 'plus').replace('-', 'minus')}">
+                                        <button type="submit">Update</button>
+                                    </form>
+                                </article>
+                            `;
+                        }).join('');
+
+                        document.getElementById('total-units-stat').textContent = totalUnits;
+                        document.getElementById('low-stock-count').textContent = lowStockCount;
+                        document.getElementById('last-update-time').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    }
+                } catch (error) { console.error(error); }
+            };
+
+            // Profile Logic
+            const loadProfileData = async () => {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/bloodbank/${user.id}`);
+                    if (response.ok) {
+                        const bankData = await response.json();
+                        document.getElementById('profile-bankName').value = bankData.bankName || '';
+                        document.getElementById('profile-location').value = bankData.location || '';
+                        document.getElementById('profile-city').value = bankData.city || '';
+                        document.getElementById('profile-contactNumber').value = bankData.contactNumber || '';
+                        document.getElementById('profile-email').value = bankData.email || '';
+                        
+                        // Sync with local storage and hero
+                        user.bankName = bankData.bankName;
+                        user.location = bankData.location;
+                        user.city = bankData.city;
+                        user.contactNumber = bankData.contactNumber;
+                        localStorage.setItem('user', JSON.stringify(user));
+                        document.getElementById('bank-name-display').textContent = user.bankName;
+                        document.getElementById('hero-bank-name-heading').textContent = user.bankName;
+                        document.getElementById('hero-bank-details').textContent = `Location: ${user.location} | Contact: ${user.contactNumber}`;
+                    }
+                } catch (error) {
+                    console.error("Error loading profile:", error);
+                    // Fallback to local storage if API fails
+                    document.getElementById('profile-bankName').value = user.bankName || '';
+                    document.getElementById('profile-location').value = user.location || '';
+                    document.getElementById('profile-contactNumber').value = user.contactNumber || '';
+                    document.getElementById('profile-email').value = user.email || '';
+                }
+            };
+
+            const profileForm = document.getElementById('profile-update-form');
+            profileForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(profileForm);
+                const data = Object.fromEntries(formData.entries());
+                const msgEl = document.getElementById('profile-update-message');
+                const btn = document.getElementById('update-profile-btn');
+
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    
+                    const response = await fetch(`${BASE_URL}/api/bloodbank/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.status) {
+                        msgEl.textContent = result.message;
+                        msgEl.className = 'auth-feedback auth-feedback-success';
+                        msgEl.style.display = 'block';
+                        
+                        // Update local storage
+                        user.bankName = data.bankName;
+                        user.location = data.location;
+                        user.city = data.city;
+                        user.contactNumber = data.contactNumber;
+                        localStorage.setItem('user', JSON.stringify(user));
+                        document.getElementById('bank-name-display').textContent = user.bankName;
+                    } else {
+                        msgEl.textContent = result.message || 'Update failed';
+                        msgEl.className = 'auth-feedback auth-feedback-error';
+                        msgEl.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Save Changes</span> <i class="fas fa-check-circle"></i>';
+                }
+            };
+
+            const loadEmergencyRequests = async () => {
+                const emergencySection = document.getElementById('emergency-requests-section');
+                const feed = document.getElementById('emergency-feed');
+                
+                try {
+                    // Try to get city from location or use city directly if available
+                    let city = user.city || user.location.split(',').pop().trim();
+                    
+                    // We can try to search for the full location if city extraction fails
+                    const response = await fetch(`${BASE_URL}/api/blood-requests/city/${encodeURIComponent(city)}`);
+                    
+                    if (response.ok) {
+                        const requests = await response.json();
+                        emergencySection.style.display = 'block'; // Always show section if we can load it
+                        
+                        if (requests.length > 0) {
+                            feed.innerHTML = requests.map(req => `
+                                <div class="feature-panel" style="border-left: 5px solid var(--primary-red); padding: 25px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                        <span class="blood-badge" style="background: var(--primary-red); color: white; margin: 0;">${req.bloodGroup}</span>
+                                        <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">${new Date(req.requestDate).toLocaleDateString()}</span>
+                                    </div>
+                                    <h4 style="font-size: 1.1rem; margin-bottom: 10px;">${req.patientName}</h4>
+                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Requested by: <strong>${req.requesterName || 'Hero'}</strong></p>
+                                    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 15px;">
+                                        <i class="fas fa-hospital" style="color: var(--primary-red); width: 20px;"></i> ${req.hospitalName}
+                                    </p>
+                                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                        <a href="tel:${req.contactNumber}" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; text-align: center; background: var(--slate-dark);">
+                                            <i class="fas fa-phone"></i> Call
+                                        </a>
+                                        <button onclick="processRequest(${req.id}, 'accept')" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; background: #16a34a;">
+                                            Accept
+                                        </button>
+                                        <button onclick="processRequest(${req.id}, 'reject')" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; background: #94a3b8;">
+                                            Ignore
+                                        </button>
+                                    </div>
+                                    <div style="text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--primary-red);">${req.unitsRequired} Units Needed</div>
+                                </div>
+                            `).join('');
+                        } else {
+                            feed.innerHTML = `
+                                <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 20px; border: 2px dashed #e2e8f0;">
+                                    <i class="fas fa-heart-circle-check" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                                    <p style="color: #64748b; font-weight: 500;">No active requests in <strong>${city}</strong> at the moment.</p>
+                                </div>
+                            `;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading emergency requests:", error);
+                }
+            };
+
+            window.processRequest = async (requestId, action) => {
+                if (!confirm(`Are you sure you want to ${action} this request?`)) return;
+                
+                try {
+                    const url = `${BASE_URL}/api/blood-requests/${requestId}/${action}${action === 'accept' ? `?bloodBankId=${user.id}` : ''}`;
+                    const response = await fetch(url, {
+                        method: 'PUT'
+                    });
+
+                    const result = await response.json();
+                    alert(result.message);
+                    if (response.ok && result.status) {
+                        loadInventory();
+                        loadEmergencyRequests();
+                    }
+                } catch (error) {
+                    console.error("Error processing request:", error);
+                    alert("Failed to process request. Check inventory levels.");
+                }
+            };
+
+            window.handleUpdate = async (e, bloodGroup) => {
+                e.preventDefault();
+                const inputId = `input-${bloodGroup.replace('+', 'plus').replace('-', 'minus')}`;
+                const units = parseInt(document.getElementById(inputId).value);
+                const btn = e.target.querySelector('button');
+                
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    
+                    const response = await fetch(`${BASE_URL}/api/blood-stock/bank/${user.id}/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bloodGroup, units })
+                    });
+
+                    if (response.ok) {
+                        loadInventory();
+                    }
+                } catch (error) { 
+                    console.error(error); 
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Update';
+                }
+            };
+
+            loadInventory();
+        });
+    </script>
+</body>
+</html>

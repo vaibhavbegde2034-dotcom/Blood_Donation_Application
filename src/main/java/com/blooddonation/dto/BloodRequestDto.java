@@ -16,6 +16,7 @@ public class BloodRequestDto {
     private String description;
     private LocalDateTime requestDate;
     private String requesterUsername;
+    private String requesterName;
 
     public BloodRequestDto() {}
 
@@ -54,4 +55,7 @@ public class BloodRequestDto {
 
     public String getRequesterUsername() { return requesterUsername; }
     public void setRequesterUsername(String requesterUsername) { this.requesterUsername = requesterUsername; }
+
+    public String getRequesterName() { return requesterName; }
+    public void setRequesterName(String requesterName) { this.requesterName = requesterName; }
 }
