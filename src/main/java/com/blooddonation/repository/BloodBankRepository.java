@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface BloodBankRepository extends JpaRepository<BloodBank, Long> {
     Optional<BloodBank> findByEmail(String email);
     boolean existsByEmail(String email);
+    java.util.List<BloodBank> findByCityContainingIgnoreCase(String city);
 }

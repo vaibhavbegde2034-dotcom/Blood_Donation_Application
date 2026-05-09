@@ -19,9 +19,9 @@
             </a>
 
             <nav class="main-nav">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="#history">History</a>
-                <a href="#requests">Requests</a>
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="search.html">Find Donors</a>
+                <a href="blood-banks.html">Blood Banks</a>
             </nav>
 
             <div class="nav-auth-actions" id="dashboard-nav-actions">
@@ -292,8 +292,10 @@
                     } else {
                         emerList.innerHTML = emergencies.slice(0, 3).map(req => `
                             <div class="emergency-item">
-                                <h4><i class="fas fa-droplet"></i> ${req.bloodGroup} Required</h4>
-                                <p>${req.hospitalName}, ${req.city}</p>
+                                <h4 style="margin-bottom: 5px;">Patient Name: ${req.patientName || 'N/A'}</h4>
+                                <p style="font-weight: 700; color: var(--primary-red); font-size: 0.95rem; margin-bottom: 5px;">Blood Group: ${req.bloodGroup}</p>
+                                <p style="font-size: 0.85rem; color: var(--slate-gray);"><i class="fas fa-hospital"></i> Hospital: ${req.hospitalName}</p>
+                                <p style="font-size: 0.85rem; color: var(--slate-gray); margin-bottom: 12px;"><i class="fas fa-map-marker-alt"></i> City: ${req.city}</p>
                                 <a href="tel:${req.contactNumber}" class="btn-nav-primary" style="padding: 8px 15px; font-size: 0.8rem; width: 100%; justify-content: center;">
                                     <i class="fas fa-phone"></i> Donate Now
                                 </a>

@@ -66,8 +66,9 @@
                 <span class="brand-text">BloodCare</span>
             </a>
             <nav class="main-nav">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="search.html">Search</a>
+                <a href="index.html">Home</a>
+                <a href="search.html">Find Donors</a>
+                <a href="blood-banks.html">Blood Banks</a>
             </nav>
             <div class="nav-auth-actions">
                 <a href="dashboard.html" class="btn-nav-primary">My Dashboard</a>
@@ -175,6 +176,31 @@
     <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            
+            // Auto-fill profile data
+            try {
+                const response = await fetch(`${BASE_URL}/api/user/profile/${user.username}`);
+                if (response.ok) {
+                    const profile = await response.json();
+                    const form = document.getElementById('blood-request-form');
+                    
+                    if (profile.bloodGroup) form.elements['bloodGroup'].value = profile.bloodGroup;
+                    if (profile.city) form.elements['city'].value = profile.city;
+                    if (profile.contactNumber) form.elements['contactNumber'].value = profile.contactNumber;
+                }
+            } catch (err) {
+                console.error('Failed to fetch profile for auto-fill', err);
+            }
+        });
+
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');

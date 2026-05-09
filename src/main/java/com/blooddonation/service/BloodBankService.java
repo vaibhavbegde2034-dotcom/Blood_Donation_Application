@@ -72,4 +72,12 @@ public class BloodBankService {
                 })
                 .orElse(new ApiResponseDto("Blood Bank not found", false));
     }
+
+    public java.util.List<BloodBank> getAllBloodBanks() {
+        return bloodBankRepository.findAll();
+    }
+
+    public java.util.List<BloodBank> getBloodBanksByCity(String city) {
+        return bloodBankRepository.findByCityContainingIgnoreCase(city);
+    }
 }

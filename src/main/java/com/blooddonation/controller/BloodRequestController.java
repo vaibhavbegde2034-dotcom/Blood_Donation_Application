@@ -41,6 +41,11 @@ public class BloodRequestController {
         return ResponseEntity.ok(bloodRequestService.getRequestsByCity(city));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BloodRequestDto> getRequestById(@PathVariable Long id) {
+        return ResponseEntity.ok(bloodRequestService.getRequestById(id));
+    }
+
     @PutMapping("/{id}/accept")
     public ResponseEntity<ApiResponseDto> acceptRequest(@PathVariable Long id, @RequestParam Long bloodBankId) {
         return ResponseEntity.ok(bloodRequestService.acceptRequest(id, bloodBankId));

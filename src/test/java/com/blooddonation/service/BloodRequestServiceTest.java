@@ -62,6 +62,31 @@ class BloodRequestServiceTest {
     }
 
     @Test
+    void createRequest_Autofill_Success() {
+        testUser.setCity("Old City");
+        testUser.setContactNumber("9876543210");
+        testUser.setFullName("Test User Full Name");
+
+        BloodRequestDto dto = new BloodRequestDto();
+        dto.setBloodGroup("O+");
+        // Leave city and contactNumber empty to trigger autofill
+        dto.setHospitalName("Main Hospital");
+        dto.setUrgency("NORMAL");
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(bloodRequestRepository.save(any(BloodRequest.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        BloodRequest request = bloodRequestService.createRequest(dto, "testuser");
+
+        assertNotNull(request);
+        assertEquals("O+", request.getBloodGroup());
+        assertEquals("Old City", request.getCity()); // Autofilled
+        assertEquals("9876543210", request.getContactNumber()); // Autofilled
+        assertEquals("Test User Full Name", request.getRequesterName()); // Autofilled
+        verify(bloodRequestRepository, times(1)).save(any(BloodRequest.class));
+    }
+
+    @Test
     void getMyRequests_Success() {
         BloodRequest request = new BloodRequest();
         request.setBloodGroup("B+");

@@ -22,6 +22,7 @@ public class UserController {
                     dto.setFullName(user.getFullName());
                     dto.setBloodGroup(user.getBloodGroup());
                     dto.setCity(user.getCity());
+                    dto.setContactNumber(user.getContactNumber());
                     dto.setLastDonationDate(user.getLastDonationDate());
                     dto.setAvailableToDonate(user.isAvailableToDonate());
                     return ResponseEntity.ok(dto);

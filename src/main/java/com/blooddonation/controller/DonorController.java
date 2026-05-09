@@ -26,15 +26,32 @@ public class DonorController {
         
         List<UserProfileDto> dtos = donors.stream().map(user -> {
             UserProfileDto dto = new UserProfileDto();
+            dto.setUsername(user.getUsername());
             dto.setFullName(user.getFullName());
             dto.setBloodGroup(user.getBloodGroup());
             dto.setCity(user.getCity());
             dto.setLastDonationDate(user.getLastDonationDate());
             dto.setAvailableToDonate(user.isAvailableToDonate());
-            // We might need contact number in the DTO for search results
+            // Don't send contact number in search results for privacy
             return dto;
         }).collect(Collectors.toList());
         
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<UserProfileDto> getDonorProfile(@PathVariable String username) {
+        return userService.findByUsername(username)
+                .map(user -> {
+                    UserProfileDto dto = new UserProfileDto();
+                    dto.setFullName(user.getFullName());
+                    dto.setBloodGroup(user.getBloodGroup());
+                    dto.setCity(user.getCity());
+                    dto.setContactNumber(user.getContactNumber());
+                    dto.setLastDonationDate(user.getLastDonationDate());
+                    dto.setAvailableToDonate(user.isAvailableToDonate());
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -68,4 +68,12 @@ public class BloodBankController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<java.util.List<BloodBank>> getAllBloodBanks(@RequestParam(required = false) String city) {
+        if (city != null && !city.isEmpty()) {
+            return ResponseEntity.ok(bloodBankService.getBloodBanksByCity(city));
+        }
+        return ResponseEntity.ok(bloodBankService.getAllBloodBanks());
+    }
 }

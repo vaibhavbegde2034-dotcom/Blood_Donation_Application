@@ -69,6 +69,7 @@ public class UserService {
         user.setFullName(profileDto.getFullName());
         user.setBloodGroup(profileDto.getBloodGroup());
         user.setCity(profileDto.getCity());
+        user.setContactNumber(profileDto.getContactNumber());
         user.setLastDonationDate(profileDto.getLastDonationDate());
         user.setAvailableToDonate(profileDto.isAvailableToDonate());
 
@@ -94,7 +95,8 @@ public class UserService {
     }
 
     public java.util.List<User> searchDonors(String bloodGroup, String city) {
-        return userRepository.findByAvailableToDonateTrueAndBloodGroupContainingAndCityContaining(
+        return userRepository.findByUserTypeAndBloodGroupContainingAndCityContainingIgnoreCase(
+            "DONOR",
             bloodGroup != null ? bloodGroup : "", 
             city != null ? city : ""
         );

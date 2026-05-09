@@ -20,13 +20,15 @@
 
             <nav class="main-nav">
                 <a href="#home">Home</a>
+                <a href="#search" id="nav-donor-link">Donor</a>
+                <a href="#search" id="nav-bank-link">Blood Bank</a>
+                <a href="#request-blood">Emergency Request</a>
                 <a href="#impact">Impact</a>
                 <a href="#about">About</a>
-                <a href="login.html">Login</a>
             </nav>
 
             <div class="nav-auth-actions" id="home-nav-actions">
-                <a href="register.html" class="btn-nav-primary">Become a Donor</a>
+                <a href="login.html" class="btn-nav-primary">Login</a>
             </div>
         </div>
     </header>
@@ -71,16 +73,24 @@
                     </div>
                     <div class="impact-visuals">
                         <div class="impact-icon-box">
-                            <i class="fas fa-hospital"></i>
-                            <span>Hospitals</span>
+                            <i class="fas fa-users"></i>
+                            <strong id="impact-donors" style="font-size: 1.5rem; font-weight: 800; color: var(--primary-red-light);">0</strong>
+                            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Donors</span>
                         </div>
                         <div class="impact-icon-box">
-                            <i class="fas fa-child-reaching"></i>
-                            <span>Children</span>
+                            <i class="fas fa-hospital-user"></i>
+                            <strong id="impact-banks" style="font-size: 1.5rem; font-weight: 800; color: var(--primary-red-light);">0</strong>
+                            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Banks</span>
                         </div>
                         <div class="impact-icon-box">
-                            <i class="fas fa-ambulance"></i>
-                            <span>Emergencies</span>
+                            <i class="fas fa-droplet"></i>
+                            <strong id="impact-requests" style="font-size: 1.5rem; font-weight: 800; color: var(--primary-red-light);">0</strong>
+                            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Requests</span>
+                        </div>
+                        <div class="impact-icon-box" id="impact-lives-box" style="display: none;">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <strong id="impact-lives" style="font-size: 1.5rem; font-weight: 800; color: var(--primary-red-light);">0</strong>
+                            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Saved</span>
                         </div>
                     </div>
                 </div>
@@ -144,15 +154,25 @@
         <section class="section-block" id="search">
             <div class="site-shell">
                 <div class="section-head">
-                    <h2>Find Available Donors</h2>
-                    <p>Search for life-savers in your area by blood group and city.</p>
+                    <h2>Find Life-Saving Resources</h2>
+                    <p>Search for available donors or registered blood banks in your area.</p>
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-bottom: 30px; gap: 15px;">
+                    <button id="tab-donors" class="btn-nav-primary" style="background: var(--primary-red); color: white; border: none; padding: 10px 25px; border-radius: 100px; font-weight: 600; cursor: pointer;">
+                        <i class="fas fa-user"></i> Find Donors
+                    </button>
+                    <button id="tab-banks" class="btn-hero-secondary" style="border: 2px solid var(--primary-red); color: var(--primary-red); padding: 10px 25px; border-radius: 100px; font-weight: 600; cursor: pointer; background: transparent;">
+                        <i class="fas fa-hospital"></i> Find Blood Banks
+                    </button>
                 </div>
 
                 <div class="dashboard-card" style="max-width: 900px; margin: 0 auto 50px; padding: 40px;">
                     <form id="donor-search-form" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; align-items: end;">
+                        <input type="hidden" id="search-type" value="donors">
                         <div class="auth-form-group" style="margin-bottom: 0;">
-                            <label>Blood Group</label>
-                            <div class="auth-input-wrap">
+                            <label id="search-label-1">Blood Group</label>
+                            <div class="auth-input-wrap" id="blood-group-container">
                                 <i class="fas fa-droplet"></i>
                                 <select id="search-blood-group" name="bloodGroup">
                                     <option value="">All Groups</option>
@@ -164,7 +184,7 @@
                             </div>
                         </div>
                         <div class="auth-form-group" style="margin-bottom: 0;">
-                            <label>City</label>
+                            <label id="search-label-2">City</label>
                             <div class="auth-input-wrap">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <input type="text" id="search-city" name="city" placeholder="e.g. Pune">

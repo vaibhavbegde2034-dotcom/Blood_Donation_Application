@@ -37,9 +37,9 @@ public class BloodRequestService {
         request.setPatientName(dto.getPatientName());
         request.setBloodGroup(dto.getBloodGroup());
         request.setUnitsRequired(dto.getUnitsRequired());
-        request.setCity(dto.getCity());
+        request.setCity(dto.getCity() != null && !dto.getCity().isEmpty() ? dto.getCity() : requester.getCity());
         request.setHospitalName(dto.getHospitalName());
-        request.setContactNumber(dto.getContactNumber());
+        request.setContactNumber(dto.getContactNumber() != null && !dto.getContactNumber().isEmpty() ? dto.getContactNumber() : requester.getContactNumber());
         request.setUrgency(dto.getUrgency());
         request.setDescription(dto.getDescription());
         request.setRequesterName(requester.getFullName());
@@ -71,6 +71,12 @@ public class BloodRequestService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    public BloodRequestDto getRequestById(Long id) {
+        return bloodRequestRepository.findById(id)
+                .map(this::convertToDto)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
     }
 
     @Autowired

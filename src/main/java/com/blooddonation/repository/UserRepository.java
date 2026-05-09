@@ -12,4 +12,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     
     java.util.List<User> findByAvailableToDonateTrueAndBloodGroupContainingAndCityContaining(String bloodGroup, String city);
+
+    java.util.List<User> findByUserTypeAndBloodGroupContainingAndCityContainingIgnoreCase(String userType, String bloodGroup, String city);
+
+    long countByUserType(String userType);
 }

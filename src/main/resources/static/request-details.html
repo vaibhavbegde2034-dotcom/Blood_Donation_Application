@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .details-page {
+            background: #f4f7f6;
+            min-height: 100vh;
+            padding: 120px 0 60px;
+        }
+
+        .details-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .details-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .details-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-red), var(--primary-red-light));
+        }
+
+        .details-header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--slate-light);
+            padding-bottom: 20px;
+        }
+
+        .details-header h2 {
+            font-size: 2.2rem;
+            color: var(--slate-dark);
+            margin-bottom: 10px;
+        }
+
+        .urgency-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .urgency-URGENT { background: #fef2f2; color: #b91c1c; }
+        .urgency-NORMAL { background: #f0fdf4; color: #166534; }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .info-group h4 {
+            font-size: 0.9rem;
+            color: var(--slate-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .info-group p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--slate-dark);
+        }
+
+        .description-box {
+            background: var(--slate-light);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+
+        .description-box h4 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .details-grid { grid-template-columns: 1fr; gap: 20px; }
+            .details-card { padding: 30px; }
+            .actions-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="details-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+            </nav>
+            <div class="nav-auth-actions">
+                <button id="logout-btn" class="btn-nav-primary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="details-container">
+        <div id="loading" style="text-align: center; padding: 100px;">
+            <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary-red);"></i>
+            <p style="margin-top: 20px; color: var(--slate-gray);">Fetching patient details...</p>
+        </div>
+
+        <div id="details-card" class="details-card" style="display: none;">
+            <div class="details-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="patient-name">Patient Name</h2>
+                    <span id="urgency-tag" class="urgency-tag">Urgent</span>
+                </div>
+                <p style="color: var(--slate-gray);">Requested by <span id="requester-name" style="font-weight: 600;">User</span></p>
+            </div>
+
+            <div class="details-grid">
+                <div class="info-group">
+                    <h4>Blood Group Needed</h4>
+                    <p id="blood-group" style="font-size: 2rem; color: var(--primary-red);">B+</p>
+                </div>
+                <div class="info-group">
+                    <h4>Units Required</h4>
+                    <p id="units">2 Units</p>
+                </div>
+                <div class="info-group">
+                    <h4>Hospital</h4>
+                    <p id="hospital">Ruby Hall Clinic</p>
+                </div>
+                <div class="info-group">
+                    <h4>City</h4>
+                    <p id="city">Pune</p>
+                </div>
+            </div>
+
+            <div class="description-box">
+                <h4>Case Description</h4>
+                <p id="description" style="line-height: 1.8;">No additional details provided for this case.</p>
+            </div>
+
+            <div class="actions-row">
+                <a href="#" id="call-btn" class="btn-nav-primary" style="flex: 1; justify-content: center; height: 60px; font-size: 1.1rem;">
+                    <i class="fas fa-phone"></i> Call Contact: <span id="phone-num"></span>
+                </a>
+                <a href="dashboard.html" class="btn-hero-secondary" style="justify-content: center; height: 60px;">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div id="error-box" style="display: none; text-align: center; padding: 100px;">
+            <i class="fas fa-exclamation-triangle fa-3x" style="color: #ef4444; margin-bottom: 20px;"></i>
+            <h3>Request Not Found</h3>
+            <p>The details you are looking for might have been fulfilled or removed.</p>
+            <a href="index.html" class="btn-nav-primary" style="margin-top: 30px;">Return Home</a>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+
+            document.getElementById('logout-btn').onclick = () => {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestId = urlParams.get('id');
+
+            if (!requestId) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-box').style.display = 'block';
+                return;
+            }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/blood-requests/${requestId}`);
+                if (response.ok) {
+                    const req = await response.json();
+                    
+                    document.getElementById('patient-name').textContent = req.patientName;
+                    document.getElementById('blood-group').textContent = req.bloodGroup;
+                    document.getElementById('units').textContent = req.unitsRequired + ' Units';
+                    document.getElementById('hospital').textContent = req.hospitalName;
+                    document.getElementById('city').textContent = req.city;
+                    document.getElementById('description').textContent = req.description || 'No additional case details provided.';
+                    document.getElementById('requester-name').textContent = req.requesterName;
+                    document.getElementById('phone-num').textContent = req.contactNumber;
+                    document.getElementById('call-btn').href = 'tel:' + req.contactNumber;
+                    
+                    const tag = document.getElementById('urgency-tag');
+                    tag.textContent = req.urgency;
+                    tag.className = 'urgency-tag urgency-' + req.urgency;
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('details-card').style.display = 'block';
+                } else {
+                    throw new Error('Failed to fetch');
+                }
+            } catch (err) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-box').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

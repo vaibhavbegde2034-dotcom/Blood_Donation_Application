@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Banks | BloodCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            padding: 120px 0 80px;
+            color: white;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .filters-bar {
+            background: var(--pure-white);
+            max-width: 600px;
+            margin: -40px auto 60px;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .results-section {
+            padding-bottom: 80px;
+        }
+
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .bank-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--slate-light);
+            transition: var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bank-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
+        }
+
+        .bank-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary-red);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .bank-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--slate-light);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--slate-gray);
+        }
+
+        .meta-item i {
+            color: var(--primary-red);
+            width: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .filters-bar {
+                grid-template-columns: 1fr;
+                margin: -40px 20px 40px;
+            }
+        }
+    </style>
+</head>
+<body class="home-page">
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+                <span class="brand-text">BloodCare</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="search.html">Find Donors</a>
+                <a href="blood-banks.html" class="active">Blood Banks</a>
+            </nav>
+            <div class="nav-auth-actions" id="nav-actions">
+                <a href="login.html" class="btn-nav-primary">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="site-shell">
+                <h1>Registered Blood Banks</h1>
+                <p>Find and connect with blood banks near you.</p>
+            </div>
+        </section>
+
+        <section class="site-shell results-section">
+            <div class="filters-bar">
+                <div class="auth-form-group" style="margin-bottom: 0;">
+                    <label>Search by City</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="filter-city" placeholder="Enter city name...">
+                    </div>
+                </div>
+                <button id="search-btn" class="btn-nav-primary" style="height: 52px; padding: 0 40px;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+
+            <div id="loading-spinner" style="display: none; text-align: center; padding: 50px;">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary-red);"></i>
+                <p style="margin-top: 15px; color: var(--slate-gray); font-weight: 500;">Fetching blood banks...</p>
+            </div>
+
+            <div id="bank-results" class="bank-grid">
+                <!-- Cards loaded dynamically -->
+            </div>
+
+            <div id="no-results" style="display: none; text-align: center; padding: 100px 20px; background: var(--pure-white); border-radius: 30px; box-shadow: var(--shadow-sm);">
+                <i class="fas fa-hospital" style="font-size: 4rem; color: var(--slate-light); margin-bottom: 25px;"></i>
+                <h3 style="font-size: 1.8rem; color: var(--slate-dark); margin-bottom: 10px;">No blood banks found</h3>
+                <p style="color: var(--slate-gray);">Try searching for a different city.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            const bankGrid = document.getElementById('bank-results');
+            const loading = document.getElementById('loading-spinner');
+            const noResults = document.getElementById('no-results');
+            const searchBtn = document.getElementById('search-btn');
+            const cityFilter = document.getElementById('filter-city');
+
+            // Set up Nav based on login state
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('nav-actions').innerHTML = `
+                    <a href="${user.userType === 'BLOOD_BANK' ? 'bank-dashboard.html' : 'dashboard.html'}" class="btn-nav-primary">My Dashboard</a>
+                `;
+            }
+
+            async function fetchBanks(city = '') {
+                bankGrid.style.display = 'none';
+                noResults.style.display = 'none';
+                loading.style.display = 'block';
+
+                try {
+                    const url = city ? `${BASE_URL}/api/bloodbank/all?city=${city}` : `${BASE_URL}/api/bloodbank/all`;
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const banks = await response.json();
+                        renderBanks(banks);
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+
+            function renderBanks(banks) {
+                if (banks.length === 0) {
+                    noResults.style.display = 'block';
+                    bankGrid.style.display = 'none';
+                    return;
+                }
+
+                bankGrid.style.display = 'grid';
+                bankGrid.innerHTML = banks.map(bank => `
+                    <article class="bank-card">
+                        <div class="bank-icon">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 5px; color: var(--slate-dark);">${bank.bankName}</h3>
+                        <p style="font-size: 0.95rem; color: var(--slate-gray);">${bank.location}</p>
+                        
+                        <div class="bank-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-city"></i>
+                                <span>${bank.city}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>${bank.email}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-phone"></i>
+                                <span>${bank.contactNumber}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: auto; padding-top: 25px; display: flex; gap: 10px;">
+                            <a href="tel:${bank.contactNumber}" class="btn-nav-primary" style="flex: 1; justify-content: center;">
+                                <i class="fas fa-phone"></i> Call Now
+                            </a>
+                        </div>
+                    </article>
+                `).join('');
+            }
+
+            searchBtn.addEventListener('click', () => {
+                fetchBanks(cityFilter.value);
+            });
+
+            // Initial load
+            fetchBanks();
+        });
+    </script>
+</body>
+</html>

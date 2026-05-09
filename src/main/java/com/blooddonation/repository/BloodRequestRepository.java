@@ -13,4 +13,6 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
     List<BloodRequest> findByStatusOrderByRequestDateDesc(String status);
     List<BloodRequest> findByCityAndStatusOrderByRequestDateDesc(String city, String status);
     List<BloodRequest> findByCityIgnoreCaseAndStatusOrderByRequestDateDesc(String city, String status);
+
+    long countByStatus(String status);
 }
