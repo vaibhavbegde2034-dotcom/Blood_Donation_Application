@@ -72,6 +72,24 @@
             font-weight: 500;
         }
 
+        .blood-group-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary-red);
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            width: fit-content;
+        }
+
+        .blood-group-badge i {
+            font-size: 1rem;
+        }
+
         .profile-body {
             padding: 0 40px 40px;
         }
@@ -239,6 +257,10 @@
                 <div class="profile-identity">
                     <h1 id="display-fullname">User Name</h1>
                     <p id="display-username">@username</p>
+                    <div class="blood-group-badge" id="profile-blood-badge">
+                        <i class="fas fa-droplet"></i>
+                        <span id="profile-blood-group">O+</span>
+                    </div>
                 </div>
             </div>
 
@@ -330,12 +352,22 @@
                                 </div>
                             </div>
                             <div class="auth-form-group">
+                                <label>Contact Number</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="tel" id="edit-contactNumber" name="contactNumber" placeholder="Enter contact number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="auth-form-group">
                                 <label>Last Donation Date</label>
                                 <div class="auth-input-wrap">
                                     <i class="fas fa-calendar"></i>
                                     <input type="date" id="edit-lastDonationDate" name="lastDonationDate">
                                 </div>
                             </div>
+                            <div class="auth-form-group"></div>
                         </div>
                         <div class="action-footer" style="margin-top: 30px;">
                             <button type="submit" class="btn-nav-primary">Save Changes</button>
@@ -403,8 +435,10 @@
                         document.getElementById('display-fullname').textContent = profile.fullName || user.username;
                         document.getElementById('display-username').textContent = `@${user.username}`;
                         document.getElementById('view-bloodgroup').textContent = profile.bloodGroup || 'Not Set';
+                        document.getElementById('profile-blood-group').textContent = profile.bloodGroup || 'Not Set';
                         document.getElementById('view-city').textContent = profile.city || 'Not Set';
                         document.getElementById('view-lastdonation').textContent = profile.lastDonationDate || 'Never';
+                        document.getElementById('view-contact').textContent = profile.contactNumber || 'Not Set';
                         document.getElementById('profile-initials-large').textContent = (profile.fullName || user.username).charAt(0).toUpperCase();
 
                         // Update Toggle
@@ -415,6 +449,7 @@
                         document.getElementById('edit-fullName').value = profile.fullName || '';
                         document.getElementById('edit-bloodGroup').value = profile.bloodGroup || 'A+';
                         document.getElementById('edit-city').value = profile.city || '';
+                        document.getElementById('edit-contactNumber').value = profile.contactNumber || '';
                         document.getElementById('edit-lastDonationDate').value = profile.lastDonationDate || '';
                     }
                 } catch (err) {

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const HOME_PREVIEW_LIMIT = 3;
     const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeRequestsList = document.getElementById('active-requests-list');
     const donorSearchForm = document.getElementById('donor-search-form');
     const searchResults = document.getElementById('search-results');
+    const heroRequestLink = document.getElementById('hero-request-link');
 
     // Password Visibility Toggle
     passwordToggles.forEach(toggle => {
@@ -26,6 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    if (heroRequestLink) {
+        heroRequestLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user'));
+            const targetUrl = 'request-blood.html';
+            window.location.href = user
+                ? targetUrl
+                : `login.html?redirect=${encodeURIComponent(targetUrl)}`;
+        });
+    }
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -196,6 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
             searchLabel1.textContent = 'Blood Group';
             bgContainer.style.display = 'block';
             if (searchResults) searchResults.innerHTML = '';
+            if (document.body.classList.contains('home-page')) {
+                performDonorSearch('', '', HOME_PREVIEW_LIMIT);
+            }
         };
 
         tabBanks.onclick = () => {
@@ -209,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // searchLabel1.textContent = 'Blood Bank Name';
             // bgContainer.style.display = 'none'; 
             if (searchResults) searchResults.innerHTML = '';
+            if (document.body.classList.contains('home-page')) {
+                performBankSearch('', '', HOME_PREVIEW_LIMIT);
+            }
         };
 
         // Nav Link Listeners for smooth tab switching
@@ -242,10 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 performBankSearch(bloodGroup, city);
             }
         });
-        // performDonorSearch('', ''); // Removed auto-load to keep home page clean
+        if (document.body.classList.contains('home-page')) {
+            performDonorSearch('', '', HOME_PREVIEW_LIMIT);
+        }
     }
 
-    async function performDonorSearch(bloodGroup, city) {
+    async function performDonorSearch(bloodGroup, city, limit = null) {
         if (!searchResults) return;
         try {
             searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Finding life-savers...</p></div>';
@@ -259,6 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (donorResponse.ok) {
                 donors = await donorResponse.json();
             }
+            if (typeof limit === 'number') {
+                donors = donors.slice(0, limit);
+            }
 
             if (donors.length === 0) {
                 searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-search fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No donors found matching your criteria.</p></div>';
@@ -269,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const statusColor = donor.availableToDonate ? '#166534' : '#991b1b';
                 const statusBg = donor.availableToDonate ? '#f0fdf4' : '#fef2f2';
                 const statusBorder = donor.availableToDonate ? '#dcfce7' : '#fee2e2';
-                const statusText = donor.availableToDonate ? 'DONOR AVAILABLE' : 'BUSY / NOT ELIGIBLE';
+                const statusText = donor.availableToDonate ? 'DONOR AVAILABLE' : 'UNAVAILABLE';
                 const iconColor = donor.availableToDonate ? '#22c55e' : '#ef4444';
                 const iconBg = donor.availableToDonate ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
 
@@ -296,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error(error); }
     }
 
-    async function performBankSearch(bloodGroup, city) {
+    async function performBankSearch(bloodGroup, city, limit = null) {
         if (!searchResults) return;
         try {
             searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--primary-red);"></i><p style="margin-top: 15px;">Searching blood bank resources...</p></div>';
@@ -311,7 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`${BASE_URL}/api/bloodbank/all?${params.toString()}`);
                 
                 if (response.ok) {
-                    const banks = await response.json();
+                    let banks = await response.json();
+                    if (typeof limit === 'number') {
+                        banks = banks.slice(0, limit);
+                    }
                     if (banks.length === 0) {
                         searchResults.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--slate-light); border-radius: 20px;"><i class="fas fa-hospital fa-2x" style="color: var(--slate-gray); margin-bottom: 15px;"></i><p>No blood banks found in this area.</p></div>';
                         return;
@@ -345,6 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 let stockResults = [];
                 if (response.ok) {
                     stockResults = await response.json();
+                }
+                if (typeof limit === 'number') {
+                    stockResults = stockResults.slice(0, limit);
                 }
 
                 if (stockResults.length === 0) {
@@ -421,18 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 animateCounter('lives-saved-count', stats.livesSaved || 0);
                 animateCounter('active-request-count', stats.activeRequests || 0);
 
-                // Impact section
-                animateCounter('impact-donors', stats.totalDonors || 0);
-                animateCounter('impact-banks', stats.totalBloodBanks || 0);
-                animateCounter('impact-requests', stats.activeRequests || 0);
-                
-                if (stats.livesSaved > 0) {
-                    const livesBox = document.getElementById('impact-lives-box');
-                    if (livesBox) {
-                        livesBox.style.display = 'flex';
-                        animateCounter('impact-lives', stats.livesSaved);
-                    }
-                }
             }
         } catch (error) { console.error(error); }
     }
@@ -442,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${BASE_URL}/api/blood-requests/active`);
             if (response.ok) {
-                const requests = await response.json();
+                const requests = (await response.json()).slice(0, HOME_PREVIEW_LIMIT);
                 if (requests.length === 0) {
                     activeRequestsList.innerHTML = '<p style="text-align: center; color: var(--slate-gray);">No active emergency requests.</p>';
                     return;

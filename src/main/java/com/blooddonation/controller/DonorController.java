@@ -27,6 +27,7 @@ public class DonorController {
         List<UserProfileDto> dtos = donors.stream().map(user -> {
             UserProfileDto dto = new UserProfileDto();
             dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
             dto.setFullName(user.getFullName());
             dto.setBloodGroup(user.getBloodGroup());
             dto.setCity(user.getCity());
@@ -44,6 +45,8 @@ public class DonorController {
         return userService.findByUsername(username)
                 .map(user -> {
                     UserProfileDto dto = new UserProfileDto();
+                    dto.setUsername(user.getUsername());
+                    dto.setEmail(user.getEmail());
                     dto.setFullName(user.getFullName());
                     dto.setBloodGroup(user.getBloodGroup());
                     dto.setCity(user.getCity());

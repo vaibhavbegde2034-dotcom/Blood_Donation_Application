@@ -19,6 +19,7 @@
             </a>
 
             <nav class="main-nav">
+                <a href="index.html">Home</a>
                 <a href="dashboard.html" class="active">Dashboard</a>
                 <a href="search.html">Find Donors</a>
                 <a href="blood-banks.html">Blood Banks</a>
@@ -284,8 +285,44 @@
                     if (response.ok) {
                         allMyRequests = await response.json();
                         renderRequests(allMyRequests);
+                        renderNotifications(allMyRequests);
                     }
                 } catch (err) { console.error('Requests load error:', err); }
+            }
+
+            function formatNotificationStatus(status) {
+                if (status === 'DONOR_REQUEST_SENT') return 'Donor requested';
+                if (status === 'OTP_VERIFICATION') return 'OTP verification in progress';
+                if (status === 'COMPLETED') return 'Donation completed';
+                if (status === 'REJECTED') return 'Request rejected';
+                return 'Request pending';
+            }
+
+            function renderNotifications(requests) {
+                const notificationList = document.getElementById('notification-list');
+                if (!notificationList) return;
+
+                const recentRequests = requests
+                    .slice()
+                    .sort((a, b) => new Date(b.requestDate || 0) - new Date(a.requestDate || 0))
+                    .slice(0, 3);
+
+                if (recentRequests.length === 0) {
+                    notificationList.innerHTML = `
+                        <div class="notification-item">
+                            No requests yet. Create your first blood request from the dashboard.
+                            <span class="notification-time">Now</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                notificationList.innerHTML = recentRequests.map(req => `
+                    <div class="notification-item">
+                        <strong>${req.patientName || 'Blood request'}</strong> for ${req.bloodGroup || 'blood'} is ${formatNotificationStatus(req.status)}.
+                        <span class="notification-time">${req.requestDate ? new Date(req.requestDate).toLocaleDateString() : 'Recently'}</span>
+                    </div>
+                `).join('');
             }
 
             function renderRequests(requests) {
