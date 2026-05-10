@@ -138,12 +138,12 @@
                 <span class="brand-text">BloodCare</span>
             </a>
             <nav class="main-nav">
-                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
                 <a href="search.html" class="active">Find Donors</a>
                 <a href="blood-banks.html">Blood Banks</a>
             </nav>
             <div class="nav-auth-actions" id="search-nav-actions">
-                <a href="dashboard.html" class="btn-nav-primary">My Dashboard</a>
+                <!-- Populated by script -->
             </div>
         </div>
     </header>
@@ -203,6 +203,24 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const navActions = document.getElementById('search-nav-actions');
+            if (user) {
+                const displayName = user.username.split('@')[0];
+                navActions.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-weight: 600;">${displayName}</span>
+                        <button id="logout-btn" class="btn-nav-primary" style="padding: 10px 20px;">Logout</button>
+                    </div>
+                `;
+                document.getElementById('logout-btn').onclick = () => {
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            } else {
+                navActions.innerHTML = `<a href="login.html" class="btn-nav-primary">Login</a>`;
+            }
+
             const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
             const donorGrid = document.getElementById('donor-results');
             const loading = document.getElementById('loading-spinner');
@@ -241,33 +259,36 @@
                 }
 
                 donorGrid.style.display = 'grid';
-                donorGrid.innerHTML = donors.map(donor => `
-                    <article class="donor-card">
-                        <div class="status-pill">AVAILABLE</div>
-                        <div class="blood-type-badge">${donor.bloodGroup}</div>
-                        <h3 style="font-size: 1.4rem; margin-bottom: 5px;">${donor.fullName || 'Hero Donor'}</h3>
-                        
-                        <div class="donor-meta">
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${donor.city || 'Location not set'}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-calendar-check"></i>
-                                <span>Last Donated: ${donor.lastDonationDate || 'First Time Donor'}</span>
-                            </div>
-                        </div>
+                donorGrid.innerHTML = donors.map(donor => {
+                    const donorId = donor.username || donor.fullName.toLowerCase().replace(/\s+/g, '');
+                    const detailUrl = `donor-details.html?username=${donorId}`;
+                    const actionUrl = user ? detailUrl : `login.html?redirect=${encodeURIComponent(detailUrl)}`;
 
-                        <div style="margin-top: 25px; display: flex; gap: 10px;">
-                            <a href="tel:#" class="btn-nav-primary" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 12px;">
-                                <i class="fas fa-phone"></i> Contact
-                            </a>
-                            <button class="btn-hero-secondary" style="padding: 12px 15px; border-radius: 12px;">
-                                <i class="fas fa-hand-holding-heart"></i>
-                            </button>
-                        </div>
-                    </article>
-                `).join('');
+                    return `
+                        <article class="donor-card" style="cursor: pointer;" onclick="window.location.href='${actionUrl}'">
+                            <div class="status-pill">${donor.availableToDonate ? 'AVAILABLE' : 'BUSY'}</div>
+                            <div class="blood-type-badge">${donor.bloodGroup}</div>
+                            <h3 style="font-size: 1.4rem; margin-bottom: 5px;">${donor.fullName || 'Hero Donor'}</h3>
+                            
+                            <div class="donor-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${donor.city || 'Location not set'}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span>Last Donated: ${donor.lastDonationDate || 'First Time Donor'}</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 25px;">
+                                <button class="btn-nav-primary" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 12px;">
+                                    <i class="fas fa-phone"></i> Contact Donor
+                                </button>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
             }
 
             searchBtn.addEventListener('click', () => {

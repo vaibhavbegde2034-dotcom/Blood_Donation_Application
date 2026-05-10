@@ -26,7 +26,7 @@
 
             <div class="nav-auth-actions" id="dashboard-nav-actions">
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span id="nav-user-name" style="font-weight: 600;">User Name</span>
+                    <span id="nav-user-name" style="font-weight: 600;"></span>
                     <button id="logout-btn" class="btn-nav-primary" style="padding: 10px 20px;">Logout</button>
                 </div>
             </div>
@@ -96,11 +96,15 @@
                         <i class="fas fa-search"></i>
                         <span>Search Donors</span>
                     </a>
+                    <a href="all-requests.html" class="action-card">
+                        <i class="fas fa-list-check"></i>
+                        <span>Search Requests</span>
+                    </a>
                     <a href="request-blood.html" class="action-card">
                         <i class="fas fa-hand-holding-droplet"></i>
                         <span>Request Blood</span>
                     </a>
-                    <a href="#blood-bank" class="action-card">
+                    <a href="blood-banks.html" class="action-card">
                         <i class="fas fa-hospital"></i>
                         <span>Blood Bank</span>
                     </a>
@@ -113,7 +117,17 @@
 
             <!-- Active Requests -->
             <section id="requests" class="dashboard-card">
-                <h3 class="card-title"><i class="fas fa-list-check"></i> My Active Requests</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="card-title" style="margin-bottom: 0;"><i class="fas fa-list-check"></i> My Active Requests</h3>
+                    <select id="request-filter" style="padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <option value="ALL">All Requests</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="DONOR_REQUEST_SENT">Donor Requested</option>
+                        <option value="OTP_VERIFICATION">OTP Verification</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="REJECTED">Rejected</option>
+                    </select>
+                </div>
                 <div class="data-table-container">
                     <table class="data-table">
                         <thead>
@@ -121,8 +135,10 @@
                                 <th>Patient Name</th>
                                 <th>Blood Group</th>
                                 <th>Units</th>
+                                <th>Assigned Donor</th>
                                 <th>Date</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="my-requests-table">
@@ -232,7 +248,8 @@
             const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
             
             // Set UI details
-            const displayName = getDisplayName(user);
+            const rawName = user.username || 'User';
+            const displayName = rawName.split('@')[0];
             document.getElementById('nav-user-name').textContent = displayName;
             document.getElementById('welcome-greeting').textContent = `Hello, ${displayName}!`;
             document.getElementById('logout-btn').onclick = () => {
@@ -260,26 +277,42 @@
             } catch (err) { console.error('Profile load error:', err); }
 
             // Load My Requests
-            try {
-                const response = await fetch(`${BASE_URL}/api/blood-requests/my-requests/${user.username}`);
-                if (response.ok) {
-                    const requests = await response.json();
-                    const tableBody = document.getElementById('my-requests-table');
-                    if (requests.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No requests found</td></tr>';
-                    } else {
-                        tableBody.innerHTML = requests.map(req => `
-                            <tr>
-                                <td><strong>${req.patientName || 'N/A'}</strong></td>
-                                <td>${req.bloodGroup}</td>
-                                <td>${req.unitsRequired || 1} Units</td>
-                                <td>${req.requestDate ? new Date(req.requestDate).toLocaleDateString() : 'Recently'}</td>
-                                <td><span class="status-badge status-${req.status.toLowerCase()}">${req.status}</span></td>
-                            </tr>
-                        `).join('');
+            let allMyRequests = [];
+            async function loadMyRequests() {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/blood-requests/my-requests/${user.username}`);
+                    if (response.ok) {
+                        allMyRequests = await response.json();
+                        renderRequests(allMyRequests);
                     }
+                } catch (err) { console.error('Requests load error:', err); }
+            }
+
+            function renderRequests(requests) {
+                const tableBody = document.getElementById('my-requests-table');
+                const filter = document.getElementById('request-filter').value;
+                
+                const filtered = (filter === 'ALL') ? requests : requests.filter(r => r.status === filter);
+
+                if (filtered.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No requests found</td></tr>';
+                } else {
+                    tableBody.innerHTML = filtered.map(req => `
+                        <tr>
+                            <td><strong>${req.patientName || 'N/A'}</strong></td>
+                            <td>${req.bloodGroup}</td>
+                            <td>${req.unitsRequired || 1} Units</td>
+                            <td>${req.acceptedDonorName || 'Not assigned'}</td>
+                            <td>${req.requestDate ? new Date(req.requestDate).toLocaleDateString() : 'Recently'}</td>
+                            <td><span class="status-badge status-${req.status.toLowerCase()}">${req.status}</span></td>
+                            <td><a href="request-details.html?id=${req.id}" class="btn-nav-primary" style="padding: 8px 12px; font-size: 0.8rem; text-decoration: none;">Open Flow</a></td>
+                        </tr>
+                    `).join('');
                 }
-            } catch (err) { console.error('Requests load error:', err); }
+            }
+
+            document.getElementById('request-filter').addEventListener('change', () => renderRequests(allMyRequests));
+            loadMyRequests();
 
             // Load Emergencies
             try {

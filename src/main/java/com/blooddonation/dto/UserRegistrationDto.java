@@ -42,6 +42,8 @@ public class UserRegistrationDto {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
+    public void setCity(String city) { this.location = city; }
+
     public String getContactNumber() { return contactNumber; }
     public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
 

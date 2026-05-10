@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details | BloodCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root { --navy: #14274E; --red: #E63946; --green: #2ECC71; --bg: #F5F7FB; --white: #FFFFFF; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 40px; }
+        .main-container { max-width: 900px; margin: 0 auto; }
+        .card { background: var(--white); border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .badge { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.8rem; }
+        .status-verified { background: rgba(46, 204, 113, 0.1); color: var(--green); }
+        .btn { padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Request Summary Card -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h2 id="patient-name">Patient Name</h2>
+                    <p style="color: #64748b;"><i class="fas fa-hospital"></i> <span id="hospital"></span></p>
+                </div>
+                <div id="status-badge" class="badge status-verified">Pending</div>
+            </div>
+            <div class="grid" style="margin-top: 20px;">
+                <div><small>Blood Group</small><h3 id="blood-group"></h3></div>
+                <div><small>Units Required</small><h3 id="units"></h3></div>
+            </div>
+        </div>
+
+        <!-- Donor Information Section -->
+        <div class="card">
+            <h3 style="margin-top: 0;">Donor Information</h3>
+            <div id="donor-view-area">
+                <!-- Content populated by JS based on user role -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const renderView = (isOwner, donorData) => {
+            const area = document.getElementById('donor-view-area');
+            if (isOwner) {
+                area.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--bg); border-radius: 16px;">
+                        <div>
+                            <h4>${donorData.name} <span class="badge status-verified">Verified</span></h4>
+                            <p>${donorData.city} | ${donorData.bloodGroup}</p>
+                            <p><strong>Contact:</strong> ${donorData.phone}</p>
+                        </div>
+                        <div>
+                            <button class="btn" style="background: var(--navy); color: white;"><i class="fas fa-phone"></i> Call</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                area.innerHTML = `
+                    <div style="text-align: center; padding: 40px; border: 2px dashed #cbd5e1; border-radius: 16px;">
+                        <i class="fas fa-lock" style="font-size: 2rem; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <h4>Contact Hidden</h4>
+                        <p style="color: #64748b;">Only the user who created this blood request can view donor contact details.</p>
+                    </div>
+                `;
+            }
+        };
+        // Mock data logic would be replaced with actual API call
+        renderView(true, { name: "Amit Sharma", bloodGroup: "B+", city: "Pune", phone: "+91 98765 43210" });
+    </script>
+</body>
+</html>

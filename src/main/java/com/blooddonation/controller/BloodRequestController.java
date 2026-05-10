@@ -16,13 +16,36 @@ public class BloodRequestController {
     @Autowired
     private BloodRequestService bloodRequestService;
 
-    @PostMapping("/create/{username}")
-    public ResponseEntity<?> createRequest(@PathVariable String username, @RequestBody BloodRequestDto dto) {
+    @PostMapping(value = "/create/{username}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createRequest(@PathVariable String username, 
+                                          @RequestParam("patientName") String patientName,
+                                          @RequestParam("bloodGroup") String bloodGroup,
+                                          @RequestParam("unitsRequired") Integer unitsRequired,
+                                          @RequestParam("city") String city,
+                                          @RequestParam("hospitalName") String hospitalName,
+                                          @RequestParam("contactNumber") String contactNumber,
+                                          @RequestParam("urgency") String urgency,
+                                          @RequestParam(value = "description", required = false) String description,
+                                          @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         try {
+            BloodRequestDto dto = new BloodRequestDto();
+            dto.setPatientName(patientName);
+            dto.setBloodGroup(bloodGroup);
+            dto.setUnitsRequired(unitsRequired);
+            dto.setCity(city);
+            dto.setHospitalName(hospitalName);
+            dto.setContactNumber(contactNumber);
+            dto.setUrgency(urgency);
+            dto.setDescription(description);
+            
+            // NOTE: Here you would typically save the file and set the path
+            // dto.setPrescriptionFilePath(fileService.save(file));
+            dto.setPrescriptionFilePath("uploads/" + file.getOriginalFilename());
+
             bloodRequestService.createRequest(dto, username);
             return ResponseEntity.ok("Blood request created successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -54,5 +77,32 @@ public class BloodRequestController {
     @PutMapping("/{id}/reject")
     public ResponseEntity<ApiResponseDto> rejectRequest(@PathVariable Long id) {
         return ResponseEntity.ok(bloodRequestService.rejectRequest(id));
+    }
+
+    @PutMapping("/{id}/verify-otp")
+    public ResponseEntity<ApiResponseDto> verifyOtp(@PathVariable Long id,
+                                                    @RequestParam String donorUsername,
+                                                    @RequestParam String otp) {
+        return ResponseEntity.ok(bloodRequestService.verifyOtp(id, donorUsername, otp));
+    }
+
+    @PutMapping("/{id}/confirm-donation")
+    public ResponseEntity<ApiResponseDto> confirmDonation(@PathVariable Long id, @RequestParam String donorUsername) {
+        return ResponseEntity.ok(bloodRequestService.confirmDonation(id, donorUsername));
+    }
+
+    @PutMapping("/{id}/accept-donor")
+    public ResponseEntity<ApiResponseDto> acceptByDonor(@PathVariable Long id, @RequestParam String donorUsername) {
+        return ResponseEntity.ok(bloodRequestService.acceptByDonor(id, donorUsername));
+    }
+
+    @PutMapping("/{id}/send-donor-request")
+    public ResponseEntity<ApiResponseDto> sendDonorRequest(@PathVariable Long id, @RequestParam String donorUsername) {
+        return ResponseEntity.ok(bloodRequestService.sendDonorRequest(id, donorUsername));
+    }
+
+    @PutMapping("/{id}/patient-accept")
+    public ResponseEntity<ApiResponseDto> patientAcceptDonorRequest(@PathVariable Long id, @RequestParam String requesterUsername) {
+        return ResponseEntity.ok(bloodRequestService.patientAcceptDonorRequest(id, requesterUsername));
     }
 }

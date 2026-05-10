@@ -11,7 +11,9 @@ import java.util.List;
 public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long> {
     List<BloodRequest> findByRequesterOrderByRequestDateDesc(User requester);
     List<BloodRequest> findByStatusOrderByRequestDateDesc(String status);
+    List<BloodRequest> findByStatusInOrderByRequestDateDesc(List<String> statuses);
     List<BloodRequest> findByCityAndStatusOrderByRequestDateDesc(String city, String status);
+    List<BloodRequest> findByCityIgnoreCaseAndStatusInOrderByRequestDateDesc(String city, List<String> statuses);
     List<BloodRequest> findByCityIgnoreCaseAndStatusOrderByRequestDateDesc(String city, String status);
 
     long countByStatus(String status);

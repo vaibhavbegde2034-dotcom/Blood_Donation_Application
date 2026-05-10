@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodCare Bank | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --navy: #14274E;
+            --red: #E63946;
+            --green: #2ECC71;
+            --orange: #F39C12;
+            --bg: #F5F7FB;
+            --white: #FFFFFF;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #333; margin: 0; }
+        
+        .dashboard-container { display: flex; min-height: 100vh; }
+        
+        .main-content { flex: 1; padding: 40px; }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: var(--navy);
+            color: white;
+            border-radius: 30px;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: url('data:image/svg+xml,...');
+            box-shadow: 0 10px 25px rgba(20, 39, 78, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            right: -50px;
+            bottom: -50px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .status-badge {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--green);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .glow { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
+
+        /* Stats Section */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px; }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Inventory Grid */
+        .inventory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px; }
+        .blood-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .blood-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .critical { border: 2px solid var(--red); box-shadow: 0 0 15px rgba(230, 57, 70, 0.1); }
+
+        .btn-action { padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .btn-primary { background: var(--red); color: white; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <main class="main-content">
+            <section class="hero-banner">
+                <div>
+                    <div class="status-badge"><div class="glow"></div> DNA Authorized</div>
+                    <h1 id="bank-name">IMCC Blood Bank</h1>
+                    <p><i class="fas fa-map-marker-alt"></i> Pune, India | <i class="fas fa-phone"></i> +91 98765 43210</p>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn-action" style="background: rgba(255,255,255,0.1); color: white;">Generate Report</button>
+                    <button class="btn-action btn-primary"><i class="fas fa-plus"></i> Add Blood Unit</button>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <div class="stat-card"><h4>Total Units</h4><h2 id="total-units">0</h2></div>
+                <div class="stat-card"><h4>Low Stock</h4><h2 id="low-stock" style="color: var(--orange);">0</h2></div>
+                <div class="stat-card"><h4>Requests</h4><h2 id="requests-count">0</h2></div>
+                <div class="stat-card"><h4>Last Update</h4><h2 style="font-size: 1.2rem;">Just Now</h2></div>
+            </section>
+
+            <section class="inventory-grid" id="inventory-grid">
+                <!-- Dynamic Content -->
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // API Integration logic would be added here, similar to the original dashboard.
+        // I have prepared the layout structure to be populated by existing backend methods.
+    </script>
+</body>
+</html>

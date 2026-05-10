@@ -274,8 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const iconBg = donor.availableToDonate ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
 
                 const user = JSON.parse(localStorage.getItem('user'));
-                const donorId = donor.username || donor.fullName.toLowerCase().replace(/\s+/g, '');
-                const detailUrl = `donor-details.html?username=${donorId}`;
+                const donorUsername = donor.username || (donor.fullName ? donor.fullName.toLowerCase().replace(/\s+/g, '') : '');
+                const detailUrl = `donor-details.html?username=${encodeURIComponent(donorUsername)}`;
                 const actionUrl = user ? detailUrl : `login.html?redirect=${encodeURIComponent(detailUrl)}`;
 
                 return `
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="padding: 10px; background: ${statusBg}; border-radius: 12px; border: 1px solid ${statusBorder};">
                             <span style="font-size: 0.8rem; font-weight: 600; color: ${statusColor};">${statusText}</span>
                         </div>
-                        <button class="btn-nav-primary" style="margin-top: 20px; width: 100%; padding: 10px; font-size: 0.85rem;">Contact Donor</button>
+                        <button class="btn-nav-primary" style="margin-top: 20px; width: 100%; padding: 10px; font-size: 0.85rem;">View Donor</button>
                     </article>
                 `;
             }).join('');
@@ -317,7 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                     searchResults.innerHTML = banks.map(bank => {
-                        const actionUrl = user ? 'blood-banks.html' : loginRedirect;
+                        const detailUrl = `blood-banks.html?id=${encodeURIComponent(bank.id)}`;
+                        const actionUrl = user ? detailUrl : `login.html?redirect=${encodeURIComponent(detailUrl)}`;
                         return `
                             <article class="feature-panel" style="text-align: center; border: 1px solid var(--primary-red); cursor: pointer;" onclick="window.location.href='${actionUrl}'">
                                 <div class="feature-panel-icon" style="margin: 0 auto 20px; background: rgba(230, 57, 70, 0.1); color: var(--primary-red);">
@@ -352,7 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 searchResults.innerHTML = stockResults.map(stock => {
-                    const actionUrl = user ? 'blood-banks.html' : loginRedirect;
+                    const detailUrl = `blood-banks.html?id=${encodeURIComponent(stock.bloodBankId)}`;
+                    const actionUrl = user ? detailUrl : `login.html?redirect=${encodeURIComponent(detailUrl)}`;
 
                     return `
                         <article class="feature-panel" style="text-align: center; border: 1px solid var(--primary-red); cursor: pointer;" onclick="window.location.href='${actionUrl}'">
@@ -377,10 +379,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (statusMessage) {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
-            statusMessage.innerHTML = `<strong>Welcome, ${user.username}!</strong>`;
+            const displayName = user.username || user.name || user.bloodBankName || user.bankName || 'User';
+            statusMessage.innerHTML = `<strong>Welcome, ${displayName}!</strong>`;
             if (navActions) {
+                const userType = String(user.userType || user.type || user.role || '').toLowerCase();
+                const isBloodBank = Boolean(
+                    userType.includes('bank') ||
+                    user.bloodBankId ||
+                    user.bloodBankName ||
+                    user.bankId ||
+                    user.bankName ||
+                    user.isBloodBank === true
+                );
+                const dashboardHref = isBloodBank ? 'bank-dashboard.html' : 'dashboard.html';
                 navActions.innerHTML = `
-                    <a href="dashboard.html" class="btn-hero-secondary" style="padding: 10px 20px;">Dashboard</a>
+                    <a href="${dashboardHref}" class="btn-hero-secondary" style="padding: 10px 20px;">Dashboard</a>
                     <button id="logout-btn" class="btn-nav-primary" style="padding: 10px 20px;">Logout</button>
                 `;
                 document.getElementById('logout-btn').onclick = () => {

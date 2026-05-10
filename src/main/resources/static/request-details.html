@@ -3,114 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Details | BloodCare</title>
+    <title>OTP Donation Flow | BloodCare</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        .details-page {
-            background: #f4f7f6;
+        :root {
+            --otp-red: #d62839;
+            --otp-navy: #12325b;
+            --otp-page: linear-gradient(180deg, #f5f8fc 0%, #eef3f9 100%);
+            --otp-card-shadow: 0 24px 60px rgba(18, 50, 91, 0.12);
+            --otp-soft-shadow: 0 14px 32px rgba(18, 50, 91, 0.08);
+            --otp-radius: 28px;
+        }
+
+        * { box-sizing: border-box; }
+        body.confirmation-page {
+            margin: 0;
             min-height: 100vh;
-            padding: 120px 0 60px;
+            background: var(--otp-page);
+            font-family: "Inter", sans-serif;
+            color: #18324a;
         }
-
-        .details-container {
-            max-width: 800px;
+        .confirmation-shell {
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 120px 20px 56px;
         }
-
-        .details-card {
-            background: white;
-            padding: 50px;
-            border-radius: 30px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
+        .hero-band {
+            background: linear-gradient(135deg, var(--otp-navy) 0%, #1f4b7f 60%, #264e86 100%);
+            color: white;
+            border-radius: 36px;
+            padding: 34px;
+            box-shadow: var(--otp-card-shadow);
         }
-
-        .details-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: linear-gradient(90deg, var(--primary-red), var(--primary-red-light));
+        .hero-grid,
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 0.85fr;
+            gap: 24px;
         }
-
-        .details-header {
-            margin-bottom: 40px;
-            border-bottom: 1px solid var(--slate-light);
-            padding-bottom: 20px;
-        }
-
-        .details-header h2 {
-            font-size: 2.2rem;
-            color: var(--slate-dark);
-            margin-bottom: 10px;
-        }
-
-        .urgency-tag {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 100px;
-            font-size: 0.85rem;
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 0.82rem;
             font-weight: 700;
             text-transform: uppercase;
         }
-
-        .urgency-URGENT { background: #fef2f2; color: #b91c1c; }
-        .urgency-NORMAL { background: #f0fdf4; color: #166534; }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
+        .hero-band h1 {
+            margin: 18px 0 10px;
+            font-family: "Poppins", sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.1;
         }
-
-        .info-group h4 {
-            font-size: 0.9rem;
-            color: var(--slate-gray);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+        .hero-band p {
+            margin: 0;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.88);
         }
-
-        .info-group p {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--slate-dark);
-        }
-
-        .description-box {
-            background: var(--slate-light);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-        }
-
-        .description-box h4 {
-            margin-bottom: 15px;
-            font-size: 1rem;
-        }
-
-        .actions-row {
+        .hero-actions {
             display: flex;
-            gap: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
         }
-
-        @media (max-width: 600px) {
-            .details-grid { grid-template-columns: 1fr; gap: 20px; }
-            .details-card { padding: 30px; }
-            .actions-row { flex-direction: column; }
+        .hero-note,
+        .panel {
+            background: white;
+            border-radius: var(--otp-radius);
+            box-shadow: var(--otp-card-shadow);
+            padding: 28px;
+        }
+        .hero-note {
+            background: rgba(255, 255, 255, 0.14);
+            color: white;
+        }
+        .hero-note h3 {
+            margin: 0 0 12px;
+            font-family: "Poppins", sans-serif;
+        }
+        .content-grid {
+            margin-top: 24px;
+            align-items: start;
+        }
+        .panel h2,
+        .panel h3,
+        .panel h4 {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            color: var(--otp-navy);
+        }
+        .panel-subtitle,
+        .description-card p,
+        .timeline-card p,
+        .otp-card p {
+            color: #5d7287;
+            line-height: 1.7;
+        }
+        .patient-grid,
+        .flow-steps,
+        .otp-meta {
+            display: grid;
+            gap: 16px;
+        }
+        .patient-grid,
+        .otp-meta {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .flow-steps {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 22px;
+        }
+        .stat-card,
+        .flow-step,
+        .description-card,
+        .timeline-card,
+        .otp-card,
+        .role-card,
+        .otp-meta .meta-box {
+            background: #fbfdff;
+            border: 1px solid #e6edf4;
+            border-radius: 24px;
+            box-shadow: var(--otp-soft-shadow);
+        }
+        .stat-card,
+        .otp-meta .meta-box {
+            padding: 18px;
+        }
+        .description-card,
+        .timeline-card,
+        .otp-card,
+        .role-card {
+            margin-top: 24px;
+            padding: 22px;
+        }
+        .stat-card label,
+        .meta-box span {
+            display: block;
+            margin-bottom: 8px;
+            color: #6f8091;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .primary-highlight strong {
+            font-size: 1.9rem;
+            color: var(--otp-red);
+        }
+        .flow-step {
+            min-height: 140px;
+            padding: 18px;
+        }
+        .step-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .step-index {
+            width: 38px;
+            height: 38px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: #e9f0fb;
+            color: var(--otp-navy);
+            font-weight: 800;
+        }
+        .step-badge {
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-pending { background: #eef3f8; color: #506579; }
+        .badge-progress { background: #fff0f2; color: var(--otp-red); }
+        .badge-complete { background: #eaf8f0; color: #1b8f62; }
+        .flow-step.active {
+            background: linear-gradient(180deg, #fff4f5 0%, #fffafa 100%);
+            border-color: rgba(214, 40, 57, 0.25);
+        }
+        .flow-step.complete {
+            background: linear-gradient(180deg, #effbf5 0%, #f9fefb 100%);
+            border-color: rgba(18, 137, 95, 0.25);
+        }
+        .flow-step.active .step-index { background: var(--otp-red); color: white; }
+        .flow-step.complete .step-index { background: #1b9c68; color: white; }
+        .otp-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .otp-input {
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid #d7e3ef;
+            padding: 16px 18px;
+            font-size: 1rem;
+            letter-spacing: 0.18em;
+        }
+        .button-stack {
+            display: grid;
+            gap: 14px;
+            margin-top: 24px;
+        }
+        .action-btn {
+            border: none;
+            border-radius: 18px;
+            padding: 16px 18px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .action-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        .btn-red {
+            color: white;
+            background: linear-gradient(135deg, var(--otp-red) 0%, #ea4e5d 100%);
+        }
+        .btn-navy {
+            color: white;
+            background: linear-gradient(135deg, var(--otp-navy) 0%, #1e4f84 100%);
+        }
+        .hidden-action { display: none !important; }
+        .status-banner {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            font-weight: 600;
+            display: none;
+        }
+        .status-banner.show { display: block; }
+        .status-banner.success { background: #ebfbf2; color: #18734d; border: 1px solid #cbeedb; }
+        .status-banner.error { background: #fff1f3; color: #b42334; border: 1px solid #ffd5db; }
+        .status-banner.info { background: #edf4ff; color: #1d4f86; border: 1px solid #d7e6fb; }
+        .utility-link {
+            flex: 1;
+            min-width: 180px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        #loading,
+        #error-box {
+            background: white;
+            border-radius: 32px;
+            box-shadow: var(--otp-card-shadow);
+            padding: 72px 24px;
+            text-align: center;
+        }
+        @media (max-width: 1024px) {
+            .hero-grid,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 720px) {
+            .patient-grid,
+            .flow-steps,
+            .otp-meta,
+            .otp-form {
+                grid-template-columns: 1fr;
+            }
+            .hero-actions {
+                flex-direction: column;
+            }
+            .utility-link {
+                width: 100%;
+            }
         }
     </style>
 </head>
-<body class="details-page">
+<body class="confirmation-page">
     <header class="site-header">
         <div class="site-shell nav-shell">
             <a href="index.html" class="brand-logo">
@@ -120,6 +299,7 @@
             <nav class="main-nav">
                 <a href="index.html">Home</a>
                 <a href="dashboard.html">Dashboard</a>
+                <a href="all-requests.html">Requests</a>
             </nav>
             <div class="nav-auth-actions">
                 <button id="logout-btn" class="btn-nav-primary">Logout</button>
@@ -127,115 +307,395 @@
         </div>
     </header>
 
-    <main class="details-container">
-        <div id="loading" style="text-align: center; padding: 100px;">
-            <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary-red);"></i>
-            <p style="margin-top: 20px; color: var(--slate-gray);">Fetching patient details...</p>
+    <main class="confirmation-shell">
+        <div id="loading">
+            <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--otp-red);"></i>
+            <p style="margin-top: 20px; color: #64788b;">Loading donation request flow...</p>
         </div>
 
-        <div id="details-card" class="details-card" style="display: none;">
-            <div class="details-header">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 id="patient-name">Patient Name</h2>
-                    <span id="urgency-tag" class="urgency-tag">Urgent</span>
+        <div id="details-view" style="display:none;">
+            <section class="hero-band">
+                <div class="hero-grid">
+                    <div>
+                        <span class="eyebrow"><i class="fas fa-shield-heart"></i> OTP-Based Blood Donation Flow</span>
+                        <h1 id="patient-name">Patient Name</h1>
+                        <p id="hero-copy">Patient creates a request, donor sends a request, patient accepts donor, OTP is sent to patient email, and donation completes successfully.</p>
+                        <div class="hero-actions">
+                            <a href="#" id="call-btn" class="btn-nav-primary utility-link">
+                                <i class="fas fa-phone"></i>
+                                Call Requester
+                            </a>
+                            <button id="hero-send-request-btn" class="btn-nav-primary utility-link hidden-action" type="button" style="border:none;cursor:pointer;">
+                                <i class="fas fa-hand-holding-medical"></i>
+                                Send Request
+                            </button>
+                            <a href="all-requests.html" class="btn-hero-secondary utility-link" style="text-decoration:none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to Requests
+                            </a>
+                        </div>
+                    </div>
+                    <aside class="hero-note">
+                        <h3>Current Donation Stage</h3>
+                        <p id="status-summary">Blood request created. Waiting for a donor to send a request to the patient.</p>
+                    </aside>
                 </div>
-                <p style="color: var(--slate-gray);">Requested by <span id="requester-name" style="font-weight: 600;">User</span></p>
-            </div>
+            </section>
 
-            <div class="details-grid">
-                <div class="info-group">
-                    <h4>Blood Group Needed</h4>
-                    <p id="blood-group" style="font-size: 2rem; color: var(--primary-red);">B+</p>
-                </div>
-                <div class="info-group">
-                    <h4>Units Required</h4>
-                    <p id="units">2 Units</p>
-                </div>
-                <div class="info-group">
-                    <h4>Hospital</h4>
-                    <p id="hospital">Ruby Hall Clinic</p>
-                </div>
-                <div class="info-group">
-                    <h4>City</h4>
-                    <p id="city">Pune</p>
-                </div>
-            </div>
+            <section class="content-grid">
+                <div class="panel">
+                    <h2>Blood Request Details</h2>
+                    <p class="panel-subtitle">A simple, clean, step-based blood donation UI with status-driven actions only.</p>
 
-            <div class="description-box">
-                <h4>Case Description</h4>
-                <p id="description" style="line-height: 1.8;">No additional details provided for this case.</p>
-            </div>
+                    <div class="patient-grid">
+                        <div class="stat-card primary-highlight">
+                            <label>Blood Group</label>
+                            <strong id="blood-group">B+</strong>
+                        </div>
+                        <div class="stat-card">
+                            <label>Units Required</label>
+                            <strong id="units">2 Units</strong>
+                        </div>
+                        <div class="stat-card">
+                            <label>Hospital</label>
+                            <strong id="hospital">Hospital</strong>
+                        </div>
+                        <div class="stat-card">
+                            <label>City</label>
+                            <strong id="city">City</strong>
+                        </div>
+                        <div class="stat-card">
+                            <label>Requester</label>
+                            <strong id="requester-name">Requester</strong>
+                        </div>
+                        <div class="stat-card">
+                            <label>Assigned Donor</label>
+                            <strong id="assigned-donor">Not assigned yet</strong>
+                        </div>
+                    </div>
 
-            <div class="actions-row">
-                <a href="#" id="call-btn" class="btn-nav-primary" style="flex: 1; justify-content: center; height: 60px; font-size: 1.1rem;">
-                    <i class="fas fa-phone"></i> Call Contact: <span id="phone-num"></span>
-                </a>
-                <a href="dashboard.html" class="btn-hero-secondary" style="justify-content: center; height: 60px;">
-                    Back to Dashboard
-                </a>
-            </div>
+                    <div class="description-card">
+                        <h3>Case Notes</h3>
+                        <p id="description">No additional case details provided.</p>
+                    </div>
+
+                    <div class="timeline-card">
+                        <h3>Step Flow</h3>
+                        <p>Flow: <strong>Pending</strong> -> <strong>Send Request</strong> -> <strong>Patient Accepts Donor</strong> -> <strong>Email OTP Verification</strong> -> <strong>Donation Successfully Completed</strong>.</p>
+                        <div class="flow-steps">
+                            <div class="flow-step" id="step-pending">
+                                <div class="step-top">
+                                    <div class="step-index">1</div>
+                                    <span class="step-badge" id="badge-pending">Pending</span>
+                                </div>
+                                <h4>Pending</h4>
+                                <p>Patient creates blood request.</p>
+                            </div>
+                            <div class="flow-step" id="step-donor-request">
+                                <div class="step-top">
+                                    <div class="step-index">2</div>
+                                    <span class="step-badge" id="badge-donor-request">Waiting</span>
+                                </div>
+                                <h4>Send Request</h4>
+                                <p>Donor clicks send request to notify the patient.</p>
+                            </div>
+                            <div class="flow-step" id="step-otp">
+                                <div class="step-top">
+                                    <div class="step-index">3</div>
+                                    <span class="step-badge" id="badge-otp">Waiting</span>
+                                </div>
+                                <h4>Email OTP Verification</h4>
+                                <p>Patient accepts donor, OTP is sent to patient email, donor enters OTP.</p>
+                            </div>
+                            <div class="flow-step" id="step-completed">
+                                <div class="step-top">
+                                    <div class="step-index">4</div>
+                                    <span class="step-badge" id="badge-completed">Waiting</span>
+                                </div>
+                                <h4>Completed</h4>
+                                <p>Correct OTP marks donation as successfully completed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="panel">
+                    <div class="role-card">
+                        <h3 id="role-title">Donation Action Panel</h3>
+                        <p id="role-copy">Only the current action for this status is shown.</p>
+                    </div>
+
+                    <div class="otp-card">
+                        <h3>Donation Controls</h3>
+                        <p>Buttons and inputs appear only when that exact step is active.</p>
+
+                        <div class="otp-meta">
+                            <div class="meta-box">
+                                <span>Request Status</span>
+                                <strong id="request-status">PENDING</strong>
+                            </div>
+                            <div class="meta-box">
+                                <span>OTP State</span>
+                                <strong id="otp-state">Not sent</strong>
+                            </div>
+                            <div class="meta-box">
+                                <span>OTP Sent At</span>
+                                <strong id="otp-sent-at">Not sent yet</strong>
+                            </div>
+                            <div class="meta-box">
+                                <span>Donation Confirmed At</span>
+                                <strong id="completed-at">Not completed yet</strong>
+                            </div>
+                        </div>
+
+                        <div id="otp-form-wrap" class="otp-form hidden-action">
+                            <input id="otp-input" class="otp-input" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP">
+                            <button id="verify-btn" class="action-btn btn-navy">
+                                <i class="fas fa-shield-check"></i>
+                                Verify OTP
+                            </button>
+                        </div>
+
+                        <div class="button-stack">
+                            <button id="accept-btn" class="action-btn btn-red hidden-action">
+                                <i class="fas fa-hand-holding-medical"></i>
+                                Send Request
+                            </button>
+                            <button id="patient-accept-btn" class="action-btn btn-navy hidden-action">
+                                <i class="fas fa-user-check"></i>
+                                Accept Donor
+                            </button>
+                        </div>
+
+                        <div id="success-state" class="status-banner success hidden-action">
+                            Donation Successfully Completed
+                        </div>
+                        <div id="status-banner" class="status-banner"></div>
+                    </div>
+                </aside>
+            </section>
         </div>
 
-        <div id="error-box" style="display: none; text-align: center; padding: 100px;">
-            <i class="fas fa-exclamation-triangle fa-3x" style="color: #ef4444; margin-bottom: 20px;"></i>
-            <h3>Request Not Found</h3>
-            <p>The details you are looking for might have been fulfilled or removed.</p>
-            <a href="index.html" class="btn-nav-primary" style="margin-top: 30px;">Return Home</a>
+        <div id="error-box" style="display:none;">
+            <i class="fas fa-circle-exclamation fa-3x" style="color: var(--otp-red);"></i>
+            <h3 style="font-family:'Poppins',sans-serif;margin-top:24px;color:var(--otp-navy);">Request Not Found</h3>
+            <p style="color:#64788b;max-width:48ch;margin:12px auto 0;">The request could not be loaded.</p>
+            <a href="all-requests.html" class="btn-nav-primary" style="margin-top:28px;display:inline-flex;">Return to Requests</a>
         </div>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = JSON.parse(localStorage.getItem('user'));
+        document.addEventListener("DOMContentLoaded", async () => {
+            const user = JSON.parse(localStorage.getItem("user"));
             if (!user) {
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
                 return;
             }
 
-            document.getElementById('logout-btn').onclick = () => {
-                localStorage.removeItem('user');
-                window.location.href = 'login.html';
+            const BASE_URL = window.location.port === "5500" ? "http://localhost:8080" : "";
+            const requestId = new URLSearchParams(window.location.search).get("id");
+            const userType = String(user.userType || user.type || user.role || "").toUpperCase();
+            const isDonor = userType.includes("DONOR");
+            const isRequester = userType.includes("REQUESTER") || userType.includes("PATIENT");
+            const currentUsername = user.username || "";
+
+            const loadingEl = document.getElementById("loading");
+            const detailsEl = document.getElementById("details-view");
+            const errorEl = document.getElementById("error-box");
+            const bannerEl = document.getElementById("status-banner");
+
+            document.getElementById("logout-btn").onclick = () => {
+                localStorage.removeItem("user");
+                window.location.href = "login.html";
             };
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const requestId = urlParams.get('id');
-
-            if (!requestId) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-box').style.display = 'block';
-                return;
+            function formatDate(value) {
+                return value ? new Date(value).toLocaleString() : "Not available";
             }
 
-            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            function showBanner(message, type) {
+                bannerEl.textContent = message;
+                bannerEl.className = `status-banner show ${type}`;
+            }
 
-            try {
-                const response = await fetch(`${BASE_URL}/api/blood-requests/${requestId}`);
-                if (response.ok) {
-                    const req = await response.json();
-                    
-                    document.getElementById('patient-name').textContent = req.patientName;
-                    document.getElementById('blood-group').textContent = req.bloodGroup;
-                    document.getElementById('units').textContent = req.unitsRequired + ' Units';
-                    document.getElementById('hospital').textContent = req.hospitalName;
-                    document.getElementById('city').textContent = req.city;
-                    document.getElementById('description').textContent = req.description || 'No additional case details provided.';
-                    document.getElementById('requester-name').textContent = req.requesterName;
-                    document.getElementById('phone-num').textContent = req.contactNumber;
-                    document.getElementById('call-btn').href = 'tel:' + req.contactNumber;
-                    
-                    const tag = document.getElementById('urgency-tag');
-                    tag.textContent = req.urgency;
-                    tag.className = 'urgency-tag urgency-' + req.urgency;
-
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('details-card').style.display = 'block';
+            function setRoleCopy(req) {
+                const roleTitle = document.getElementById("role-title");
+                const roleCopy = document.getElementById("role-copy");
+                const isRequestOwner = Boolean(req && currentUsername && req.requesterUsername === currentUsername);
+                const canDonateToRequest = Boolean(req && currentUsername && req.requesterUsername !== currentUsername);
+                if (isDonor || canDonateToRequest) {
+                    roleTitle.textContent = "Donor Flow Panel";
+                    roleCopy.textContent = 'If status is Pending, only "Send Request" is shown. If OTP is sent, only OTP verification is shown.';
+                } else if (isRequester || isRequestOwner) {
+                    roleTitle.textContent = "Patient Flow Panel";
+                    roleCopy.textContent = 'If donor has requested, only "Accept Donor" is shown. Accepting donor automatically sends OTP to patient email.';
                 } else {
-                    throw new Error('Failed to fetch');
+                    roleTitle.textContent = "Donation Action Panel";
+                    roleCopy.textContent = "Only the current action for this status is shown.";
                 }
-            } catch (err) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-box').style.display = 'block';
             }
+
+            function getStepState(status) {
+                if (status === "COMPLETED") return { pending: "complete", donor: "complete", otp: "complete", done: "active" };
+                if (status === "OTP_VERIFICATION") return { pending: "complete", donor: "complete", otp: "active", done: "idle" };
+                if (status === "DONOR_REQUEST_SENT") return { pending: "complete", donor: "active", otp: "idle", done: "idle" };
+                return { pending: "active", donor: "idle", otp: "idle", done: "idle" };
+            }
+
+            function setStepVisual(stepId, badgeId, state, text) {
+                const step = document.getElementById(stepId);
+                const badge = document.getElementById(badgeId);
+                step.className = "flow-step";
+                badge.className = "step-badge";
+                if (state === "complete") {
+                    step.classList.add("complete");
+                    badge.classList.add("badge-complete");
+                } else if (state === "active") {
+                    step.classList.add("active");
+                    badge.classList.add("badge-progress");
+                } else {
+                    badge.classList.add("badge-pending");
+                }
+                badge.textContent = text;
+            }
+
+            function updateStatusFlow(req) {
+                const state = getStepState(req.status);
+                setStepVisual("step-pending", "badge-pending", state.pending, req.status === "PENDING" ? "Current" : "Done");
+                setStepVisual("step-donor-request", "badge-donor-request", state.donor, req.status === "DONOR_REQUEST_SENT" ? "Current" : ((req.status === "OTP_VERIFICATION" || req.status === "COMPLETED") ? "Done" : "Waiting"));
+                setStepVisual("step-otp", "badge-otp", state.otp, req.status === "OTP_VERIFICATION" ? "Current" : (req.status === "COMPLETED" ? "Done" : "Waiting"));
+                setStepVisual("step-completed", "badge-completed", state.done, req.status === "COMPLETED" ? "Current" : "Waiting");
+
+                const summaryMap = {
+                    PENDING: 'Patient blood request is active. Waiting for a donor to send a request.',
+                    DONOR_REQUEST_SENT: "Donor has requested. Patient can now accept donor.",
+                    OTP_VERIFICATION: "OTP was sent to patient email. Patient shares OTP with donor at hospital.",
+                    COMPLETED: "Donation Successfully Completed.",
+                    REJECTED: "This request is rejected."
+                };
+                document.getElementById("status-summary").textContent = summaryMap[req.status] || "Request status is being tracked.";
+            }
+
+            function updateActionState(req) {
+                const acceptBtn = document.getElementById("accept-btn");
+                const heroReadyBtn = document.getElementById("hero-send-request-btn");
+                const patientAcceptBtn = document.getElementById("patient-accept-btn");
+                const otpFormWrap = document.getElementById("otp-form-wrap");
+                const otpInput = document.getElementById("otp-input");
+                const verifyBtn = document.getElementById("verify-btn");
+                const successState = document.getElementById("success-state");
+
+                acceptBtn.classList.add("hidden-action");
+                heroReadyBtn.classList.add("hidden-action");
+                patientAcceptBtn.classList.add("hidden-action");
+                otpFormWrap.classList.add("hidden-action");
+                successState.classList.add("hidden-action");
+
+                acceptBtn.disabled = true;
+                heroReadyBtn.disabled = true;
+                patientAcceptBtn.disabled = true;
+                otpInput.disabled = true;
+                verifyBtn.disabled = true;
+
+                const isRequestOwner = Boolean(currentUsername && req.requesterUsername === currentUsername);
+                const accepted = Boolean(req.acceptedDonorUsername);
+                const lockedToOtherDonor = accepted && currentUsername && req.acceptedDonorUsername !== currentUsername;
+                const canDonateToRequest = Boolean(currentUsername && !isRequestOwner && !lockedToOtherDonor);
+                const canDonorAct = (isDonor || canDonateToRequest) && currentUsername && !lockedToOtherDonor;
+                const canPatientAccept = (isRequester || isRequestOwner) && currentUsername && isRequestOwner && req.status === "DONOR_REQUEST_SENT";
+
+                if (req.status === "PENDING" && canDonorAct) {
+                    acceptBtn.classList.remove("hidden-action");
+                    heroReadyBtn.classList.remove("hidden-action");
+                    acceptBtn.disabled = false;
+                    heroReadyBtn.disabled = false;
+                } else if (req.status === "DONOR_REQUEST_SENT" && canPatientAccept) {
+                    patientAcceptBtn.classList.remove("hidden-action");
+                    patientAcceptBtn.disabled = false;
+                } else if (req.status === "OTP_VERIFICATION" && canDonorAct) {
+                    otpFormWrap.classList.remove("hidden-action");
+                    otpInput.disabled = false;
+                    verifyBtn.disabled = false;
+                } else if (req.status === "COMPLETED") {
+                    successState.classList.remove("hidden-action");
+                }
+
+                if (lockedToOtherDonor) {
+                    showBanner("This request is already assigned to another donor.", "info");
+                }
+            }
+
+            function renderRequest(req) {
+                setRoleCopy(req);
+                document.getElementById("patient-name").textContent = req.patientName || "Patient";
+                document.getElementById("hero-copy").textContent = `${req.patientName || "The patient"} needs ${req.bloodGroup || "blood"} at ${req.hospitalName || "the hospital"} in ${req.city || "the city"}.`;
+                document.getElementById("blood-group").textContent = req.bloodGroup || "N/A";
+                document.getElementById("units").textContent = `${req.unitsRequired || 1} Units`;
+                document.getElementById("hospital").textContent = req.hospitalName || "Not provided";
+                document.getElementById("city").textContent = req.city || "Not provided";
+                document.getElementById("requester-name").textContent = req.requesterName || req.requesterUsername || "Requester";
+                document.getElementById("assigned-donor").textContent = req.acceptedDonorName || "Not assigned yet";
+                document.getElementById("description").textContent = req.description || "No additional case details provided.";
+                document.getElementById("request-status").textContent = req.status === "COMPLETED" ? "Donation Successfully Completed" : (req.status || "PENDING");
+                document.getElementById("otp-state").textContent = req.otpVerified ? "Verified" : (req.otpSentAt ? "Sent, awaiting verification" : "Not sent");
+                document.getElementById("otp-sent-at").textContent = req.otpSentAt ? formatDate(req.otpSentAt) : "Not sent yet";
+                document.getElementById("completed-at").textContent = req.donationCompletedAt ? formatDate(req.donationCompletedAt) : "Not completed yet";
+                document.getElementById("call-btn").href = `tel:${req.contactNumber || ""}`;
+                document.getElementById("call-btn").innerHTML = `<i class="fas fa-phone"></i> Call ${req.contactNumber || "Requester"}`;
+                updateStatusFlow(req);
+                updateActionState(req);
+            }
+
+            async function loadRequest() {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/blood-requests/${requestId}`);
+                    if (!response.ok) throw new Error("Request not found");
+                    renderRequest(await response.json());
+                    loadingEl.style.display = "none";
+                    detailsEl.style.display = "block";
+                } catch (error) {
+                    loadingEl.style.display = "none";
+                    errorEl.style.display = "block";
+                }
+            }
+
+            async function callAction(path) {
+                try {
+                    const response = await fetch(`${BASE_URL}/api/blood-requests/${requestId}${path}`, { method: "PUT" });
+                    const result = await response.json();
+                    showBanner(result.message, result.status ? "success" : "error");
+                    if (result.status) await loadRequest();
+                } catch (error) {
+                    showBanner("Unable to complete this action right now.", "error");
+                }
+            }
+
+            await loadRequest();
+
+            document.getElementById("accept-btn").addEventListener("click", async () => {
+                if (!currentUsername) return showBanner("Donor identity is missing in the current session.", "error");
+                await callAction(`/accept-donor?donorUsername=${encodeURIComponent(currentUsername)}`);
+            });
+
+            document.getElementById("hero-send-request-btn").addEventListener("click", async () => {
+                if (!currentUsername) return showBanner("Donor identity is missing in the current session.", "error");
+                await callAction(`/accept-donor?donorUsername=${encodeURIComponent(currentUsername)}`);
+            });
+
+            document.getElementById("patient-accept-btn").addEventListener("click", async () => {
+                if (!currentUsername) return showBanner("Requester identity is missing in the current session.", "error");
+                await callAction(`/patient-accept?requesterUsername=${encodeURIComponent(currentUsername)}`);
+            });
+
+            document.getElementById("verify-btn").addEventListener("click", async () => {
+                if (!currentUsername) return showBanner("Donor identity is missing in the current session.", "error");
+                const otp = document.getElementById("otp-input").value.trim();
+                if (!/^\d{6}$/.test(otp)) {
+                    showBanner("Enter the 6-digit OTP shared from the patient email.", "error");
+                    return;
+                }
+                await callAction(`/verify-otp?donorUsername=${encodeURIComponent(currentUsername)}&otp=${encodeURIComponent(otp)}`);
+            });
         });
     </script>
 </body>

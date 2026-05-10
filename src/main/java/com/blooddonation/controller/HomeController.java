@@ -30,7 +30,7 @@ public class HomeController {
     @GetMapping("/stats")
     public StatsDto getHomeStats() {
         long totalDonors = userRepository.countByUserType("DONOR");
-        long livesSaved = bloodRequestRepository.countByStatus("ACCEPTED");
+        long livesSaved = bloodRequestRepository.countByStatus("COMPLETED");
         long activeRequests = bloodRequestRepository.countByStatus("PENDING");
         long totalBloodBanks = bloodBankRepository.count();
         

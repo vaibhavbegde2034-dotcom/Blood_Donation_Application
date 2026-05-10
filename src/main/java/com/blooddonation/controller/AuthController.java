@@ -52,6 +52,8 @@ public class AuthController {
                 response.put("fullName", user.getFullName() != null ? user.getFullName() : "");
                 response.put("email", user.getEmail());
                 response.put("id", user.getId().toString());
+                response.put("userType", user.getUserType() != null ? user.getUserType() : "");
+                response.put("role", user.getRole() != null ? user.getRole() : "");
                 return ResponseEntity.ok(response);
             }
         } else {

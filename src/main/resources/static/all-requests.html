@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Blood Requests | BloodCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root { --navy: #14274E; --red: #E63946; --bg: #F5F7FB; --white: #FFFFFF; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; font-size: 18px; }
+        
+        .header { background: var(--navy); padding: 100px 20px; text-align: center; color: white; border-radius: 0 0 50px 50px; }
+        .filter-section { background: var(--white); max-width: 1000px; margin: -50px auto 60px; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 20px; align-items: end; }
+        .auth-form-group label { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; display: block; }
+        .auth-input-wrap { padding: 18px; font-size: 1rem; border-radius: 16px; border: 1px solid #EAEAEA; }
+        
+        .request-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 40px; padding: 20px 50px 100px; max-width: 1400px; margin: 0 auto; }
+        .req-card { background: white; padding: 35px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.06); transition: all 0.4s ease; position: relative; overflow: hidden; }
+        .req-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--red); }
+        
+        .badge { padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .urgency-URGENT { background: #fee2e2; color: #b91c1c; }
+        .urgency-NORMAL { background: #f0fdf4; color: #166534; }
+
+        .btn-view { background: var(--navy); color: white; border-radius: 16px; padding: 18px; width: 100%; text-align: center; display: block; font-weight: 700; font-size: 1.1rem; text-decoration: none; margin-top: 25px; transition: 0.3s; }
+        .btn-view:hover { background: var(--red); color: white; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-shell nav-shell">
+            <a href="index.html" class="brand-logo"><span class="brand-mark"><i class="fas fa-heart-pulse"></i></span><span class="brand-text">BloodCare</span></a>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="search.html">Find Donors</a>
+                <a href="blood-banks.html">Blood Banks</a>
+            </nav>
+            <div id="nav-actions" class="nav-auth-actions"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="header">
+            <h1 style="margin: 0; font-size: 4rem; font-weight: 800;">Emergency Requests</h1>
+            <p style="opacity: 0.9; margin-top: 20px; font-size: 1.3rem;">Verified emergency needs across our network.</p>
+        </section>
+
+        <section class="filter-section">
+            <div class="auth-form-group">
+                <label>Blood Group</label>
+                <select id="f-bg" class="auth-input-wrap"><option value="">All Groups</option><option value="A+">A+</option><option value="B+">B+</option><option value="O+">O+</option><option value="AB+">AB+</option></select>
+            </div>
+            <div class="auth-form-group">
+                <label>City</label>
+                <input type="text" id="f-city" class="auth-input-wrap" placeholder="e.g. Pune">
+            </div>
+            <div class="auth-form-group">
+                <label>Urgency</label>
+                <select id="f-urgency" class="auth-input-wrap"><option value="">All</option><option value="URGENT">Urgent</option><option value="NORMAL">Normal</option></select>
+            </div>
+            <button id="filter-btn" class="btn-nav-primary" style="height: 60px; background: var(--red); border-color: var(--red); font-size: 1rem;">Apply Filters</button>
+        </section>
+
+        <div id="request-list" class="request-grid"></div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const nav = document.getElementById('nav-actions');
+            if(user) {
+                nav.innerHTML = `<span style="font-weight:600; margin-right:15px;">${user.username.split('@')[0]}</span><button id="logout" class="btn-nav-primary">Logout</button>`;
+                document.getElementById('logout').onclick = () => { localStorage.removeItem('user'); window.location.href='index.html'; };
+            } else { nav.innerHTML = `<a href="login.html" class="btn-nav-primary">Login</a>`; }
+
+            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
+            const list = document.getElementById('request-list');
+
+            async function load() {
+                const res = await fetch(`${BASE_URL}/api/blood-requests/active`);
+                if (res.ok) render(await res.json());
+            }
+
+            function render(data) {
+                list.innerHTML = data.map(r => `
+                    <div class="req-card">
+                        <span class="badge urgency-${r.urgency}">${r.urgency}</span>
+                        <h3 style="margin: 20px 0 10px; font-size: 1.6rem; font-weight:700;">${r.patientName}</h3>
+                        <div style="display: flex; gap: 25px; color: #64748b; font-size: 1rem; margin-bottom: 25px;">
+                            <span><i class="fas fa-droplet" style="color:var(--red);"></i> ${r.bloodGroup}</span>
+                            <span><i class="fas fa-hospital" style="color:var(--red);"></i> ${r.hospitalName}</span>
+                        </div>
+                        <div style="display:grid; gap:10px; color:#475569; font-size:0.95rem;">
+                            <span><i class="fas fa-location-dot" style="color:var(--red);"></i> ${r.city || 'City not set'}</span>
+                            <span><i class="fas fa-user" style="color:var(--red);"></i> Requester: ${r.requesterName || r.requesterUsername || 'Unknown'}</span>
+                            <span><i class="fas fa-hand-holding-medical" style="color:var(--red);"></i> Donor: ${r.acceptedDonorName || 'Waiting for donor'}</span>
+                            <span><i class="fas fa-wave-square" style="color:var(--red);"></i> Status: ${formatStatus(r.status)}</span>
+                        </div>
+                        <a href="request-details.html?id=${r.id}" class="btn-view">${getRequestActionLabel(r)}</a>
+                    </div>
+                `).join('');
+            }
+
+            function formatStatus(status) {
+                if (status === 'DONOR_REQUEST_SENT') return 'Donor Request Sent';
+                if (status === 'OTP_VERIFICATION') return 'OTP Verification';
+                if (status === 'COMPLETED') return 'Donation Completed';
+                return status || 'Pending';
+            }
+
+            function getRequestActionLabel(request) {
+                if (!user) return 'View Case';
+                const isOwner = request.requesterUsername === user.username;
+                if (isOwner && request.status === 'DONOR_REQUEST_SENT') return 'Accept Donor';
+                if (isOwner && request.status === 'OTP_VERIFICATION') return 'Track OTP Step';
+                if (isOwner) return 'View Request';
+                if (request.status === 'OTP_VERIFICATION' && request.acceptedDonorUsername === user.username) return 'Verify OTP';
+                if (request.status === 'DONOR_REQUEST_SENT' && request.acceptedDonorUsername === user.username) return 'Waiting For Patient';
+                if (request.status === 'PENDING') return 'Send Request';
+                return 'View Flow';
+            }
+
+            document.getElementById('filter-btn').onclick = async () => {
+                const bg = document.getElementById('f-bg').value, city = document.getElementById('f-city').value, urgency = document.getElementById('f-urgency').value;
+                const all = await (await fetch(`${BASE_URL}/api/blood-requests/active`)).json();
+                render(all.filter(r => (!bg || r.bloodGroup === bg) && (!city || r.city.toLowerCase().includes(city.toLowerCase())) && (!urgency || r.urgency === urgency)));
+            };
+            load();
+        });
+    </script>
+</body>
+</html>

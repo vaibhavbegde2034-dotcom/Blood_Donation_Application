@@ -3,675 +3,1557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Management Dashboard | BloodCare</title>
+    <title>Blood Bank Dashboard | BloodCare</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+
     <style>
-        .bank-dashboard {
-            background: #f8fafc;
-            min-height: 100vh;
-            padding-top: 100px;
+        :root{
+            --red-700:#c1121f;
+            --red-600:#d11a2a;
+            --red-500:#e11d48;
+            --navy-950:#070b18;
+            --navy-900:#0b1226;
+            --navy-850:#0f1a36;
+            --navy-800:#13224a;
+            --ink:#0b1226;
+            --muted:#6b7280;
+            --surface:rgba(255,255,255,.58);
+            --stroke:rgba(255,255,255,.35);
+            --shadow:0 18px 55px rgba(2,8,23,.12);
+            --shadow-soft:0 10px 28px rgba(2,8,23,.10);
+            --radius-xl:26px;
+            --radius-lg:20px;
+            --radius-md:14px;
+            --ring:0 0 0 4px rgba(225,29,72,.14);
         }
 
-        .inventory-hero {
-            background: linear-gradient(135deg, var(--slate-dark) 0%, #1e293b 100%);
-            border-radius: 30px;
-            padding: 50px;
-            color: white;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+            color:var(--ink);
+            background:
+                radial-gradient(900px 520px at 14% 18%, rgba(225,29,72,.16), transparent 55%),
+                radial-gradient(900px 520px at 80% 10%, rgba(19,34,74,.18), transparent 52%),
+                radial-gradient(900px 520px at 80% 92%, rgba(225,29,72,.10), transparent 55%),
+                linear-gradient(180deg, #f8fafc 0%, #f3f6fb 46%, #f8fafc 100%);
+            overflow-x:hidden;
         }
 
-        .inventory-hero::before {
-            content: '\f471';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            right: -20px;
-            top: -20px;
-            font-size: 15rem;
-            opacity: 0.05;
-            transform: rotate(15deg);
+        a{color:inherit}
+        button,input,select,textarea{font:inherit}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+        .hidden{display:none !important}
+
+        .app-shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+
+        /* Sidebar */
+        .sidebar{
+            position:sticky;top:0;align-self:start;height:100vh;
+            padding:22px 18px;
+            background: linear-gradient(180deg, rgba(11,18,38,.96), rgba(7,11,24,.96));
+            color:#eef2ff;
+            border-right:1px solid rgba(255,255,255,.08);
+            overflow:hidden;
+        }
+        .sidebar::before{
+            content:"";
+            position:absolute;inset:-200px -160px auto auto;
+            width:420px;height:420px;
+            background: radial-gradient(circle at 30% 35%, rgba(225,29,72,.55), transparent 62%);
+            filter: blur(24px);
+            opacity:.55;
+            pointer-events:none;
+        }
+        .brand{
+            position:relative;
+            display:flex;gap:12px;align-items:center;
+            padding:12px 10px 16px;margin-bottom:6px;
+        }
+        .brand-badge{
+            width:46px;height:46px;border-radius:16px;
+            display:grid;place-items:center;
+            background: linear-gradient(135deg, rgba(225,29,72,.95), rgba(225,29,72,.42));
+            box-shadow: 0 16px 30px rgba(225,29,72,.18);
+            border:1px solid rgba(255,255,255,.18);
+        }
+        .brand h1{margin:0;font-size:1.15rem;font-weight:800;line-height:1.15;letter-spacing:.2px}
+        .brand p{margin:2px 0 0;color:rgba(226,232,240,.75);font-size:.82rem;font-weight:500}
+
+        .sidebar-nav{position:relative;display:flex;flex-direction:column;gap:8px;margin-top:10px}
+        .nav-btn{
+            all:unset;
+            cursor:pointer;
+            display:flex;align-items:center;gap:12px;
+            padding:12px 12px;border-radius:14px;
+            color:rgba(226,232,240,.92);
+            transition: transform .18s ease, background .18s ease, color .18s ease;
+            border:1px solid transparent;
+        }
+        .nav-btn i{width:18px;text-align:center;opacity:.95}
+        .nav-btn:hover{background:rgba(255,255,255,.08);transform:translateY(-1px)}
+        .nav-btn[aria-current="page"]{
+            background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+            border-color: rgba(255,255,255,.14);
         }
 
-        .hero-info h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 800;
+        .sidebar-footer{
+            position:absolute;left:18px;right:18px;bottom:18px;
+            padding:14px;border-radius:18px;
+            background: rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.10);
+        }
+        .mini-profile{display:flex;gap:12px;align-items:center}
+        .avatar{
+            width:44px;height:44px;border-radius:16px;
+            background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+            border:1px solid rgba(255,255,255,.12);
+            display:grid;place-items:center;
+            color:#fff;
+        }
+        .mini-profile .meta{min-width:0}
+        .mini-profile .meta .name{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .mini-profile .meta .role{font-size:.78rem;color:rgba(226,232,240,.70)}
+        .footer-actions{display:flex;gap:10px;margin-top:12px}
+
+        /* Main */
+        .main{padding:22px 22px 42px}
+        .topbar{
+            position:sticky;top:0;z-index:20;
+            padding:14px 14px;border-radius: var(--radius-xl);margin-bottom:18px;
+            background: rgba(255,255,255,.52);
+            backdrop-filter: blur(14px);
+            border:1px solid rgba(255,255,255,.55);
+            box-shadow: var(--shadow-soft);
+            display:flex;align-items:center;justify-content:space-between;gap:14px;
+        }
+        .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+        .mobile-menu{
+            display:none;
+            width:42px;height:42px;border-radius:14px;
+            border:1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.68);
+            cursor:pointer;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+        .mobile-menu:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+        .page-title{min-width:0}
+        .page-title h2{margin:0;font-size:1.15rem;font-weight:800}
+        .page-title p{margin:2px 0 0;color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+
+        .pill{
+            display:flex;align-items:center;gap:8px;
+            padding:10px 12px;border-radius:999px;
+            background: rgba(11,18,38,.06);
+            border:1px solid rgba(11,18,38,.10);
+            color:rgba(2,6,23,.88);
+            font-weight:600;font-size:.86rem;
+        }
+        .pill i{color:var(--red-600)}
+
+        .btn{
+            border:0;cursor:pointer;border-radius:14px;
+            padding:11px 14px;font-weight:700;letter-spacing:.1px;
+            display:inline-flex;align-items:center;justify-content:center;gap:10px;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease;
+            user-select:none;
+        }
+        .btn:active{transform:translateY(0)}
+        .btn-primary{
+            color:white;
+            background: linear-gradient(135deg, var(--red-600), var(--red-500));
+            box-shadow: 0 16px 35px rgba(225,29,72,.22);
+        }
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 22px 45px rgba(225,29,72,.28)}
+        .btn-ghost{
+            background: rgba(255,255,255,.64);
+            border:1px solid rgba(15,23,42,.10);
+            color:rgba(2,6,23,.86);
+        }
+        .btn-ghost:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+        .btn-danger{
+            background: rgba(225,29,72,.10);
+            border:1px solid rgba(225,29,72,.22);
+            color: var(--red-700);
+        }
+        .btn-danger:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+        .btn-small{padding:9px 12px;border-radius:12px;font-size:.86rem}
+
+        .grid{display:grid;grid-template-columns:1.2fr .85fr;gap:18px;align-items:start}
+        .card{
+            background: var(--surface);
+            border:1px solid rgba(255,255,255,.55);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+            overflow:hidden;
+        }
+        .card-inner{padding:18px}
+
+        .hero{
+            position:relative;
+            padding:20px;
+            background:
+                radial-gradient(680px 280px at 24% 14%, rgba(225,29,72,.32), transparent 60%),
+                radial-gradient(680px 280px at 92% 10%, rgba(19,34,74,.28), transparent 62%),
+                linear-gradient(135deg, rgba(11,18,38,.90), rgba(7,11,24,.90));
+            color:#f8fafc;
+            border-radius: var(--radius-xl);
+            border:1px solid rgba(255,255,255,.10);
+            box-shadow: 0 30px 85px rgba(2,8,23,.26);
+            overflow:hidden;
+        }
+        .hero::after{
+            content:"";
+            position:absolute;right:-120px;top:-140px;
+            width:420px;height:420px;
+            background: radial-gradient(circle at 30% 35%, rgba(225,29,72,.75), transparent 60%);
+            filter: blur(18px);
+            opacity:.65;
+            pointer-events:none;
+        }
+        .hero-row{
+            position:relative;
+            display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+            flex-wrap:wrap;
+        }
+        .hero h3{margin:0;font-size:1.35rem;font-weight:800;letter-spacing:.1px}
+        .hero p{margin:6px 0 0;color:rgba(226,232,240,.80);font-size:.9rem;max-width:64ch}
+        .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+        .chip{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:9px 12px;border-radius:999px;
+            background: rgba(255,255,255,.10);
+            border:1px solid rgba(255,255,255,.12);
+            color:rgba(248,250,252,.92);
+            font-weight:700;font-size:.85rem;
         }
 
-        .hero-info p {
-            font-size: 1.1rem;
-            opacity: 0.8;
+        .stats{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px;margin-top:16px}
+        .stat{
+            background: rgba(255,255,255,.08);
+            border:1px solid rgba(255,255,255,.12);
+            border-radius:18px;
+            padding:14px;
+            display:flex;gap:12px;align-items:center;
+            transition: transform .18s ease, box-shadow .18s ease;
         }
-
-        .stock-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+        .stat:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(2,8,23,.22)}
+        .stat .icon{
+            width:46px;height:46px;border-radius:16px;
+            display:grid;place-items:center;
+            background: linear-gradient(135deg, rgba(225,29,72,.92), rgba(225,29,72,.26));
+            border:1px solid rgba(255,255,255,.14);
         }
+        .stat .label{margin:0;color:rgba(226,232,240,.76);font-weight:600;font-size:.78rem}
+        .stat .value{margin:2px 0 0;font-size:1.2rem;font-weight:900;letter-spacing:.2px}
 
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border: 1px solid #f1f5f9;
+        .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px 0}
+        .section-head h4{margin:0;font-size:1.05rem;font-weight:900}
+        .section-head p{margin:4px 0 0;color:var(--muted);font-size:.85rem}
+        .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+
+        .input{
+            width:100%;
+            padding:11px 12px;
+            border-radius:14px;
+            border:1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.68);
+            outline:none;
+            transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
         }
+        .input:focus{box-shadow:var(--ring);border-color:rgba(225,29,72,.35)}
+        .input-row{display:grid;grid-template-columns:1fr 140px;gap:10px}
+        .input-row.third{grid-template-columns:1fr 1fr 140px}
+        .hint{color:var(--muted);font-size:.82rem}
 
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+        /* Inventory cards */
+        .stock-grid{
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0, 1fr));
+            gap:14px;
+            padding:14px 18px 18px;
         }
-
-        .stat-details h4 {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
+        .stock-card{
+            background: rgba(255,255,255,.64);
+            border:1px solid rgba(15,23,42,.08);
+            border-radius:22px;
+            box-shadow:0 14px 38px rgba(2,8,23,.10);
+            padding:14px;
+            transition: transform .18s ease, box-shadow .18s ease;
+            position:relative;
+            overflow:hidden;
         }
-
-        .stat-details span {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--slate-dark);
+        .stock-card:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(2,8,23,.14)}
+        .stock-card::before{
+            content:"";
+            position:absolute;inset:-1px;
+            background: radial-gradient(220px 120px at 18% 12%, rgba(225,29,72,.18), transparent 60%);
+            opacity:.9;
+            pointer-events:none;
         }
-
-        /* Blood Groups Grid */
-        .blood-groups-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
+        .stock-top{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+        .blood-tag{display:flex;align-items:center;gap:10px}
+        .blood-badge{
+            width:42px;height:42px;border-radius:16px;
+            background: linear-gradient(135deg, rgba(225,29,72,.95), rgba(225,29,72,.22));
+            border:1px solid rgba(225,29,72,.28);
+            display:grid;place-items:center;
+            color:white;
+            box-shadow: 0 16px 35px rgba(225,29,72,.18);
+            font-weight:900;
         }
+        .blood-meta .type{margin:0;font-weight:900;font-size:1.05rem;letter-spacing:.2px}
+        .blood-meta .sub{margin:2px 0 0;color:var(--muted);font-size:.8rem;font-weight:600}
 
-        .blood-vial-card {
-            background: white;
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid #f1f5f9;
-            transition: all 0.3s;
-            position: relative;
+        .status-pill{
+            position:relative;
+            padding:8px 10px;border-radius:999px;
+            font-weight:900;font-size:.72rem;letter-spacing:.6px;text-transform:uppercase;
+            border:1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.64);
+            display:inline-flex;align-items:center;gap:8px;
         }
+        .dot{width:8px;height:8px;border-radius:999px}
+        .status-good .dot{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+        .status-low .dot{background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.14)}
+        .status-critical .dot{background:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.14)}
+        .status-good{color:#065f46}
+        .status-low{color:#92400e}
+        .status-critical{color:#7f1d1d}
 
-        .blood-vial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
+        .units-row{position:relative;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+        .units{font-size:1.55rem;font-weight:1000;letter-spacing:.2px}
+        .units small{font-size:.85rem;color:var(--muted);font-weight:700}
+
+        .stepper{display:flex;gap:8px;align-items:center}
+        .stepper .btn{width:40px;height:40px;padding:0;border-radius:14px}
+        .stepper input{
+            width:56px;text-align:center;padding:10px 8px;
+            border-radius:14px;border:1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.70);font-weight:900;
         }
+        .stock-actions{position:relative;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
 
-        .vial-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+        .divider{height:1px;background: rgba(15,23,42,.08);margin:14px 0}
+
+        /* Alerts */
+        .alert-list{padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px}
+        .alert{
+            display:flex;gap:12px;align-items:flex-start;
+            padding:12px;border-radius:18px;
+            background: rgba(255,255,255,.66);
+            border:1px solid rgba(15,23,42,.08);
+            box-shadow:0 10px 26px rgba(2,8,23,.08);
         }
-
-        .vial-type {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary-red);
+        .alert .a-ic{
+            width:42px;height:42px;border-radius:16px;
+            display:grid;place-items:center;
+            background: rgba(225,29,72,.10);
+            border:1px solid rgba(225,29,72,.18);
+            color: var(--red-700);
         }
+        .alert .a-title{margin:0;font-weight:900}
+        .alert .a-sub{margin:2px 0 0;color:var(--muted);font-size:.84rem}
 
-        .vial-status {
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 100px;
-            text-transform: uppercase;
+        /* Emergency requests */
+        .table-wrap{padding:14px 18px 18px}
+        .table{width:100%;border-collapse:separate;border-spacing:0 10px}
+        .table thead th{
+            text-align:left;font-size:.78rem;color:rgba(2,6,23,.62);
+            font-weight:900;letter-spacing:.6px;text-transform:uppercase;
+            padding:0 12px 4px;
         }
-
-        .status-stable { background: #f0fdf4; color: #16a34a; }
-        .status-low { background: #fff1f2; color: #e11d48; }
-
-        .vial-progress-container {
-            height: 120px;
-            background: #f8fafc;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #f1f5f9;
+        .row{
+            background: rgba(255,255,255,.68);
+            border:1px solid rgba(15,23,42,.08);
+            box-shadow:0 14px 38px rgba(2,8,23,.10);
         }
-
-        .vial-progress-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(0deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
-            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .row td{
+            padding:12px;
+            border-top:1px solid rgba(15,23,42,.08);
+            border-bottom:1px solid rgba(15,23,42,.08);
         }
-
-        .vial-progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 10px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 100%;
-            transform: translateY(-50%);
+        .row td:first-child{border-left:1px solid rgba(15,23,42,.08);border-radius:16px 0 0 16px}
+        .row td:last-child{border-right:1px solid rgba(15,23,42,.08);border-radius:0 16px 16px 0}
+        .who{display:flex;gap:10px;align-items:center;min-width:220px}
+        .who .pill-avatar{
+            width:38px;height:38px;border-radius:14px;
+            display:grid;place-items:center;
+            background: linear-gradient(135deg, rgba(19,34,74,.16), rgba(19,34,74,.06));
+            border:1px solid rgba(19,34,74,.18);
+            color:rgba(2,6,23,.78);
+            font-weight:900;
         }
+        .who .nm{margin:0;font-weight:900}
+        .who .hs{margin:2px 0 0;color:var(--muted);font-size:.82rem}
 
-        .units-display {
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--slate-dark);
+        .lvl{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:8px 10px;border-radius:999px;
+            font-size:.76rem;font-weight:1000;letter-spacing:.6px;text-transform:uppercase;
+            border:1px solid rgba(15,23,42,.10);
         }
+        .lvl-high{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.18);color:#991b1b}
+        .lvl-medium{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.20);color:#92400e}
+        .lvl-low{background:rgba(22,163,74,.10);border-color:rgba(22,163,74,.18);color:#065f46}
 
-        .update-form-inline {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        .verify{display:flex;align-items:center;gap:8px;font-weight:900;color:rgba(2,6,23,.76)}
+        .verify.ok{color:#065f46}
+        .verify.bad{color:#92400e}
+
+        .row-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;min-width:260px}
+
+        /* Modal */
+        .modal-backdrop{
+            position:fixed;inset:0;
+            background: rgba(2,6,23,.55);
+            display:none;align-items:center;justify-content:center;
+            padding:18px;z-index:50;
         }
-
-        .update-form-inline input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid #f1f5f9;
-            font-size: 0.9rem;
-            width: 80px;
+        .modal-backdrop.show{display:flex}
+        .modal{
+            width:min(720px, 100%);
+            border-radius: var(--radius-xl);
+            background: rgba(255,255,255,.78);
+            backdrop-filter: blur(16px);
+            border:1px solid rgba(255,255,255,.62);
+            box-shadow:0 28px 95px rgba(2,8,23,.25);
+            overflow:hidden;
         }
-
-        .update-form-inline button {
-            padding: 10px 15px;
-            border-radius: 10px;
-            background: var(--slate-dark);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
+        .modal-head{
+            padding:16px 18px;
+            display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+            background: linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.45));
+            border-bottom:1px solid rgba(15,23,42,.08);
         }
-
-        .update-form-inline button:hover {
-            background: var(--primary-red);
+        .modal-head h5{margin:0;font-size:1.05rem;font-weight:1000}
+        .modal-head p{margin:4px 0 0;color:var(--muted);font-size:.85rem}
+        .modal-body{padding:16px 18px}
+        .modal-foot{
+            padding:14px 18px;display:flex;gap:10px;justify-content:flex-end;
+            border-top:1px solid rgba(15,23,42,.08);
+            background: rgba(255,255,255,.55);
         }
-
-        .glass-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            border-bottom: 1px solid #eee;
+        .x{
+            width:44px;height:44px;border-radius:16px;
+            border:1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.68);
+            cursor:pointer;
+            transition: transform .18s ease, box-shadow .18s ease;
         }
+        .x:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
 
-        .nav-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Toast */
+        .toast{
+            position: fixed;right:18px;bottom:18px;
+            width:min(420px, calc(100vw - 36px));
+            border-radius:18px;
+            background: rgba(255,255,255,.80);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,.62);
+            box-shadow: 0 30px 90px rgba(2,8,23,.22);
+            padding: 12px 12px;
+            display:none;z-index:60;
         }
-
-        .logo {
-            text-decoration: none;
-            color: var(--primary-red-dark);
-            font-weight: 800;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .toast.show{display:flex;gap:12px;align-items:flex-start}
+        .toast .tic{
+            width:44px;height:44px;border-radius:16px;
+            display:grid;place-items:center;
+            background: rgba(19,34,74,.10);
+            border:1px solid rgba(19,34,74,.16);
+            color: var(--navy-800);
         }
+        .toast .t-title{margin:0;font-weight:1000}
+        .toast .t-sub{margin:2px 0 0;color:var(--muted);font-size:.85rem}
 
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @media (max-width:1180px){
+            .stats{grid-template-columns:repeat(2, minmax(0, 1fr))}
+            .stock-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
+            .grid{grid-template-columns:1fr}
+        }
+        @media (max-width:920px){
+            .app-shell{grid-template-columns:1fr}
+            .sidebar{
+                position:fixed;
+                left:14px;top:14px;bottom:14px;height:auto;
+                width:min(340px, calc(100vw - 28px));
+                border-radius:28px;
+                box-shadow: 0 40px 120px rgba(2,8,23,.38);
+                transform: translateX(calc(-100% - 22px));
+                transition: transform .22s ease;
+                z-index:70;
+            }
+            .sidebar.open{transform: translateX(0)}
+            .mobile-menu{display:inline-grid;place-items:center}
+            .sidebar-footer{position:static;margin-top:14px}
+        }
+        @media (max-width:640px){
+            .main{padding:14px 14px 34px}
+            .topbar{border-radius:22px}
+            .stats{grid-template-columns:1fr}
+            .stock-grid{grid-template-columns:1fr}
+            .input-row,.input-row.third{grid-template-columns:1fr}
+            .row-actions{justify-content:flex-start}
+            .table thead{display:none}
+            .table,.table tbody,.table tr,.table td{display:block;width:100%}
+            .row{border-radius:18px}
+            .row td{border:0;padding:10px 12px}
+            .row td:first-child,.row td:last-child{border-radius:0}
+            .row td[data-label]::before{
+                content: attr(data-label);
+                display:block;
+                font-size:.72rem;font-weight:900;letter-spacing:.6px;text-transform:uppercase;
+                color:rgba(2,6,23,.55);
+                margin-bottom:2px;
+            }
+        }
     </style>
 </head>
-<body class="bank-dashboard">
-    <nav class="glass-nav">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-heart-pulse pulse"></i>
-                <span>BloodCare <span style="font-weight: 400; color: #64748b;">| Bank</span></span>
-            </a>
-            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
-                <button id="show-inventory" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem; border: none; background: transparent;">
-                    <i class="fas fa-warehouse"></i> Inventory
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand" aria-label="BloodCare Admin">
+                <div class="brand-badge" aria-hidden="true">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div>
+                    <h1>BloodCare</h1>
+                    <p>Bank Dashboard • Premium UI</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Navigation">
+                <button class="nav-btn" data-view="inventory" aria-current="page">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span>Inventory</span>
                 </button>
-                <button id="show-profile" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem; border: none; background: transparent;">
-                    <i class="fas fa-user-cog"></i> Profile
+                <button class="nav-btn" data-view="requests">
+                    <i class="fa-solid fa-truck-medical"></i>
+                    <span>Emergency Requests</span>
                 </button>
-                <span id="bank-name-display" style="font-weight: 600; color: var(--slate-dark);"></span>
-                <button id="logout-btn" class="btn-hero-secondary" style="padding: 10px 20px; font-size: 0.9rem;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                <button class="nav-btn" data-view="alerts">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Low Stock Alerts</span>
+                </button>
+                <button class="nav-btn" id="open-profile">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Admin Profile</span>
+                </button>
+                <a class="nav-btn" href="index.html" style="text-decoration:none">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="mini-profile">
+                    <div class="avatar" aria-hidden="true"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="meta">
+                        <div class="name" id="miniAdminName">Admin</div>
+                        <div class="role" id="miniBankName">City Blood Bank</div>
+                    </div>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn btn-ghost btn-small" id="quick-contact">
+                        <i class="fa-solid fa-headset"></i>
+                        Support
+                    </button>
+                    <button class="btn btn-danger btn-small" id="logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <h2>Blood Bank Dashboard</h2>
+                        <p id="subTitle">Inventory management, emergency dispatch & verification</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="pill" title="Bank location">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span id="bankLocationPill">Main Branch</span>
+                    </div>
+                    <button class="btn btn-ghost" id="open-profile-top">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        Edit Profile
+                    </button>
+                    <a class="btn btn-primary" href="all-requests.html" style="text-decoration:none">
+                        <i class="fa-solid fa-list-check"></i>
+                        All Requests
+                    </a>
+                </div>
+            </header>
+
+            <section class="hero" aria-label="Overview">
+                <div class="hero-row">
+                    <div>
+                        <h3>Premium Bank Operations</h3>
+                        <p>Track blood group-wise stock, quickly adjust units, and respond to emergency requests with prescription verification.</p>
+                        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+                            <span class="chip"><i class="fa-solid fa-shield-heart"></i> Safe Handling</span>
+                            <span class="chip"><i class="fa-solid fa-bolt"></i> Rapid Dispatch</span>
+                            <span class="chip"><i class="fa-solid fa-file-circle-check"></i> Verified Rx</span>
+                        </div>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-ghost" id="seedDemo">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            Load Demo Data
+                        </button>
+                        <button class="btn btn-primary" id="openAddGroup">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            Add Blood Group
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats" aria-label="Statistics">
+                    <div class="stat">
+                        <div class="icon"><i class="fa-solid fa-droplet"></i></div>
+                        <div>
+                            <p class="label">Total Blood Units</p>
+                            <p class="value" id="statTotalUnits">0</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="icon" style="background:linear-gradient(135deg, rgba(22,163,74,.85), rgba(22,163,74,.22))">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <p class="label">Status Good</p>
+                            <p class="value" id="statGood">0</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="icon" style="background:linear-gradient(135deg, rgba(245,158,11,.92), rgba(245,158,11,.24))">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <p class="label">Low / Critical</p>
+                            <p class="value" id="statLowCritical">0</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="icon" style="background:linear-gradient(135deg, rgba(59,130,246,.92), rgba(59,130,246,.22))">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="label">Last Updated</p>
+                            <p class="value" id="statUpdated">—</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid" style="margin-top:18px">
+                <section class="card" id="view-inventory" aria-label="Inventory">
+                    <div class="section-head">
+                        <div>
+                            <h4>Blood Inventory</h4>
+                            <p>Increase/decrease units, remove groups, and monitor status indicators.</p>
+                        </div>
+                        <div class="toolbar">
+                            <input class="input" id="searchGroups" placeholder="Search blood group (e.g., O-, AB+)" style="width:240px">
+                            <button class="btn btn-ghost btn-small" id="exportJson">
+                                <i class="fa-solid fa-download"></i>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stock-grid" id="stockGrid"></div>
+                </section>
+
+                <section class="card" aria-label="Controls & Alerts">
+                    <div class="section-head">
+                        <div>
+                            <h4>Low Stock Alerts</h4>
+                            <p>Auto-generated warnings for groups below threshold.</p>
+                        </div>
+                        <div class="toolbar">
+                            <button class="btn btn-ghost btn-small" id="openThresholds">
+                                <i class="fa-solid fa-sliders"></i>
+                                Thresholds
+                            </button>
+                        </div>
+                    </div>
+                    <div class="alert-list" id="alertList"></div>
+
+                    <div class="divider"></div>
+
+                    <div class="card-inner">
+                        <h4 style="margin:0 0 10px;font-weight:1000">Quick Update</h4>
+                        <p class="hint" style="margin:0 0 12px">Add/Remove blood groups and set units instantly.</p>
+                        <div class="input-row third">
+                            <input class="input" id="quickGroup" placeholder="Blood group (A+, O-, AB+)">
+                            <input class="input" id="quickUnits" type="number" min="0" placeholder="Units">
+                            <button class="btn btn-primary" id="quickSet">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                Set
+                            </button>
+                        </div>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+                            <button class="btn btn-ghost btn-small" id="quickAdd">
+                                <i class="fa-solid fa-circle-plus"></i>
+                                Add Group
+                            </button>
+                            <button class="btn btn-danger btn-small" id="quickRemove">
+                                <i class="fa-solid fa-trash"></i>
+                                Remove Group
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="card" id="view-requests" style="margin-top:18px" aria-label="Emergency blood requests">
+                <div class="section-head">
+                    <div>
+                        <h4>Emergency Blood Requests</h4>
+                        <p>Patient details, hospital, units required, emergency level, and prescription verification.</p>
+                    </div>
+                    <div class="toolbar">
+                        <input class="input" id="requestSearch" placeholder="Search patient/hospital/blood group" style="width:320px">
+                        <button class="btn btn-ghost btn-small" id="newRequest">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Request
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="table" aria-describedby="Emergency requests table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Blood Needed</th>
+                                <th>Units</th>
+                                <th>Emergency</th>
+                                <th>Prescription</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTbody"></tbody>
+                    </table>
+                    <p class="hint" id="requestsEmpty" style="display:none;margin:6px 0 0">No requests match your filters.</p>
+                </div>
+            </section>
+
+            <section class="card hidden" id="view-alerts" style="margin-top:18px" aria-label="Alerts (standalone)">
+                <div class="section-head">
+                    <div>
+                        <h4>Low Stock Alerts</h4>
+                        <p>Same alert feed, shown as a separate view for easy mobile navigation.</p>
+                    </div>
+                    <div class="toolbar">
+                        <button class="btn btn-ghost btn-small" id="refreshAlerts">
+                            <i class="fa-solid fa-rotate"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="alert-list" id="alertListStandalone"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <div>
+                    <h5 id="profileTitle">Admin Profile</h5>
+                    <p>Edit bank/admin info and keep it synced across the dashboard.</p>
+                </div>
+                <button class="x" data-close="profileModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-row">
+                    <input class="input" id="adminName" placeholder="Admin name">
+                    <input class="input" id="adminRole" placeholder="Role (e.g., Bank Admin)">
+                </div>
+                <div style="height:10px"></div>
+                <div class="input-row">
+                    <input class="input" id="bankName" placeholder="Blood bank name">
+                    <input class="input" id="bankLocation" placeholder="Location (City/Branch)">
+                </div>
+                <div style="height:10px"></div>
+                <div class="input-row">
+                    <input class="input" id="adminEmail" type="email" placeholder="Email">
+                    <input class="input" id="adminPhone" placeholder="Phone">
+                </div>
+                <div style="height:10px"></div>
+                <input class="input" id="bankAddress" placeholder="Address">
+                <div style="height:10px"></div>
+                <textarea class="input" id="bankNote" rows="3" placeholder="Notes / Operating hours" style="resize:vertical"></textarea>
+                <p class="hint" style="margin:10px 0 0">Stored locally in your browser (demo mode). Hook into your backend later if needed.</p>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-ghost" data-close="profileModal">Cancel</button>
+                <button class="btn btn-primary" id="saveProfile">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Profile
                 </button>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <main class="site-shell" id="inventory-section">
-        <section class="inventory-hero">
-            <div class="hero-info">
-                <span class="hero-label" style="background: rgba(255,255,255,0.1); color: white;" id="hero-bank-label">Authorized Blood Bank</span>
-                <h1 id="hero-bank-name-heading">Blood Bank Name</h1>
-                <p id="hero-bank-details">Location & Contact Details</p>
+    <!-- Add Group Modal -->
+    <div class="modal-backdrop" id="groupModal" role="dialog" aria-modal="true" aria-labelledby="groupTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <div>
+                    <h5 id="groupTitle">Add Blood Group</h5>
+                    <p>Create a new blood group card and set initial units.</p>
+                </div>
+                <button class="x" data-close="groupModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="hero-actions">
-                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; text-align: right;">
-                    <div style="font-size: 0.9rem; opacity: 0.8;">Status</div>
-                    <div style="font-size: 1.2rem; font-weight: 700;"><i class="fas fa-circle" style="color: #22c55e; font-size: 0.8rem;"></i> Operational</div>
+            <div class="modal-body">
+                <div class="input-row">
+                    <input class="input" id="newGroupName" placeholder="Blood group (A+, O-, AB+)">
+                    <input class="input" id="newGroupUnits" type="number" min="0" placeholder="Units">
                 </div>
+                <p class="hint" style="margin:10px 0 0">Tip: Standard groups include A+, A-, B+, B-, AB+, AB-, O+, O-.</p>
             </div>
-        </section>
-
-        <section class="stock-stats">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #eff6ff; color: #2563eb;"><i class="fas fa-droplet"></i></div>
-                <div class="stat-details">
-                    <h4>Total Units</h4>
-                    <span id="total-units-stat">0</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #fef2f2; color: #dc2626;"><i class="fas fa-triangle-exclamation"></i></div>
-                <div class="stat-details">
-                    <h4>Low Stock Alerts</h4>
-                    <span id="low-stock-count">0</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;"><i class="fas fa-clock-rotate-left"></i></div>
-                <div class="stat-details">
-                    <h4>Last Updated</h4>
-                    <span style="font-size: 1.1rem;" id="last-update-time">Just now</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="emergency-requests-section" style="margin-bottom: 50px; display: none;">
-            <div class="section-head" style="text-align: left; margin-bottom: 30px;">
-                <h2 style="color: var(--primary-red);"><i class="fas fa-triangle-exclamation"></i> Local Emergency Requests</h2>
-                <p>Urgent blood requirements in your city. Contact them if you have stock.</p>
-            </div>
-            <div id="emergency-feed" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
-                <!-- Populated by JS -->
-            </div>
-        </section>
-
-        <div class="section-head" style="text-align: left; margin-bottom: 40px;">
-            <h2>Blood Inventory</h2>
-            <p>Directly manage each blood group's supply levels.</p>
-        </div>
-
-        <div class="blood-groups-grid" id="inventory-grid">
-            <!-- Populated by JS -->
-            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-red);"></i>
-            </div>
-        </div>
-    </main>
-
-    <main class="site-shell" id="profile-section" style="display: none;">
-        <section class="inventory-hero" style="background: linear-gradient(135deg, var(--primary-red-dark) 0%, var(--primary-red) 100%);">
-            <div class="hero-info">
-                <span class="hero-label" style="background: rgba(255,255,255,0.2); color: white;">Settings</span>
-                <h1>Profile Management</h1>
-                <p>Update your blood bank's public information and contact details.</p>
-            </div>
-        </section>
-
-        <div class="auth-card" style="max-width: 600px; margin: 0 auto; padding: 40px; box-shadow: var(--shadow-md); border-radius: 30px;">
-            <form id="profile-update-form" class="auth-form-modern">
-                <div class="auth-form-group">
-                    <label for="bankName">Blood Bank Name</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-hospital"></i>
-                        <input type="text" id="profile-bankName" name="bankName" required>
-                    </div>
-                </div>
-
-                <div class="auth-form-group">
-                    <label for="location">Location / Address</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-map-pin"></i>
-                        <input type="text" id="profile-location" name="location" required>
-                    </div>
-                </div>
-
-                <div class="auth-form-group">
-                    <label for="city">City</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-city"></i>
-                        <input type="text" id="profile-city" name="city" required>
-                    </div>
-                </div>
-
-                <div class="auth-form-group">
-                    <label for="contactNumber">Contact Number</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="profile-contactNumber" name="contactNumber" required>
-                    </div>
-                </div>
-
-                <div class="auth-form-group">
-                    <label for="email">Email Address (Read Only)</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="profile-email" name="email" readonly style="background: #f1f5f9; cursor: not-allowed;">
-                    </div>
-                </div>
-
-                <div class="auth-form-group">
-                    <label for="password">New Password (leave blank to keep current)</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="profile-password" name="password" placeholder="••••••••">
-                    </div>
-                </div>
-
-                <button type="submit" class="auth-submit-btn glowing-pulse" id="update-profile-btn">
-                    <span>Save Changes</span>
-                    <i class="fas fa-check-circle"></i>
+            <div class="modal-foot">
+                <button class="btn btn-ghost" data-close="groupModal">Cancel</button>
+                <button class="btn btn-primary" id="addGroupConfirm">
+                    <i class="fa-solid fa-circle-plus"></i>
+                    Add Group
                 </button>
-            </form>
-            <div id="profile-update-message" class="auth-feedback" style="display: none; margin-top: 20px;"></div>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Threshold Modal -->
+    <div class="modal-backdrop" id="thresholdModal" role="dialog" aria-modal="true" aria-labelledby="thresholdTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <div>
+                    <h5 id="thresholdTitle">Stock Thresholds</h5>
+                    <p>Customize status indicators and alert cutoffs.</p>
+                </div>
+                <button class="x" data-close="thresholdModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-row">
+                    <input class="input" id="thCritical" type="number" min="0" placeholder="Critical below (units)">
+                    <input class="input" id="thLow" type="number" min="0" placeholder="Low below (units)">
+                </div>
+                <p class="hint" style="margin:10px 0 0">Rules: units &lt; critical = Critical, else units &lt; low = Low, else Good.</p>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-ghost" data-close="thresholdModal">Cancel</button>
+                <button class="btn btn-primary" id="saveThresholds">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Request Modal -->
+    <div class="modal-backdrop" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <div>
+                    <h5 id="requestTitle">Add Emergency Request</h5>
+                    <p>Enter patient & hospital info and attach prescription verification status.</p>
+                </div>
+                <button class="x" data-close="requestModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-row">
+                    <input class="input" id="reqPatient" placeholder="Patient name">
+                    <input class="input" id="reqHospital" placeholder="Hospital name">
+                </div>
+                <div style="height:10px"></div>
+                <div class="input-row third">
+                    <input class="input" id="reqGroup" placeholder="Blood group needed (e.g., O-)">
+                    <input class="input" id="reqUnits" type="number" min="1" placeholder="Units required">
+                    <select class="input" id="reqLevel" aria-label="Emergency level">
+                        <option value="High">High</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+                <div style="height:10px"></div>
+                <div class="input-row">
+                    <input class="input" id="reqPhone" placeholder="Patient phone">
+                    <select class="input" id="reqRx" aria-label="Prescription verification">
+                        <option value="Verified" selected>Verified prescription</option>
+                        <option value="Pending">Pending verification</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-ghost" data-close="requestModal">Cancel</button>
+                <button class="btn btn-primary" id="addRequestConfirm">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <div class="tic" aria-hidden="true"><i class="fa-solid fa-bell"></i></div>
+        <div style="min-width:0">
+            <p class="t-title" id="toastTitle">Updated</p>
+            <p class="t-sub" id="toastSub">Changes saved.</p>
+        </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (!user || user.userType !== 'BLOOD_BANK') {
-                window.location.href = 'login.html';
-                return;
+        const STORAGE_KEYS = {
+            profile: "bb_profile_v1",
+            inventory: "bb_inventory_v1",
+            requests: "bb_requests_v1",
+            thresholds: "bb_thresholds_v1",
+            updatedAt: "bb_updated_at_v1"
+        };
+
+        function newId() {
+            if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+            return `id_${Date.now().toString(16)}_${Math.random().toString(16).slice(2)}`;
+        }
+
+        const DEFAULT_THRESHOLDS = { criticalBelow: 8, lowBelow: 18 };
+
+        const DEFAULT_INVENTORY = {
+            "A+": 26, "A-": 12, "B+": 22, "B-": 9,
+            "AB+": 14, "AB-": 6, "O+": 34, "O-": 11
+        };
+
+        const DEFAULT_REQUESTS = [
+            { id: newId(), patient: "Aarav Mehta", phone: "+91 98XXXXXX12", hospital: "CityCare Hospital", group: "O-", units: 2, level: "High", rx: "Verified", status: "Pending" },
+            { id: newId(), patient: "Sana Khan", phone: "+91 97XXXXXX44", hospital: "St. Mercy Clinic", group: "A+", units: 1, level: "Medium", rx: "Pending", status: "Pending" },
+            { id: newId(), patient: "Rohan Iyer", phone: "+91 99XXXXXX08", hospital: "Apollo Center", group: "B-", units: 3, level: "High", rx: "Verified", status: "Pending" }
+        ];
+
+        const DEFAULT_PROFILE = {
+            adminName: "Bank Admin",
+            adminRole: "Blood Bank Admin",
+            bankName: "BloodCare Bank",
+            bankLocation: "Main Branch",
+            email: "admin@bloodcare.example",
+            phone: "+91 90XXXXXX00",
+            address: "—",
+            note: "Open 24/7 • Cold chain monitored"
+        };
+
+        function loadJson(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                return JSON.parse(raw);
+            } catch {
+                return fallback;
+            }
+        }
+
+        function saveJson(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function clampInt(n, min, max) {
+            const v = Number.parseInt(String(n), 10);
+            if (Number.isNaN(v)) return min;
+            return Math.max(min, Math.min(max, v));
+        }
+
+        function normalizeGroup(group) {
+            const g = String(group || "").trim().toUpperCase().replace(/\s+/g, "");
+            if (!g) return "";
+            return /^(A|B|AB|O)[+-]$/.test(g) ? g : "";
+        }
+
+        function statusFor(units, thresholds) {
+            if (units < thresholds.criticalBelow) return "Critical";
+            if (units < thresholds.lowBelow) return "Low";
+            return "Good";
+        }
+
+        function statusClass(status) {
+            if (status === "Good") return "status-good";
+            if (status === "Low") return "status-low";
+            return "status-critical";
+        }
+
+        function levelClass(level) {
+            if (level === "High") return "lvl-high";
+            if (level === "Medium") return "lvl-medium";
+            return "lvl-low";
+        }
+
+        function initials(name) {
+            const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return "PT";
+            const a = parts[0]?.[0] || "P";
+            const b = parts.length > 1 ? parts[parts.length - 1][0] : "";
+            return (a + b).toUpperCase();
+        }
+
+        function setUpdatedNow() {
+            localStorage.setItem(STORAGE_KEYS.updatedAt, new Date().toISOString());
+        }
+
+        function formatUpdated() {
+            const iso = localStorage.getItem(STORAGE_KEYS.updatedAt);
+            if (!iso) return "—";
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return "—";
+            return d.toLocaleString(undefined, { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        function toast(title, sub) {
+            const el = document.getElementById("toast");
+            document.getElementById("toastTitle").textContent = title || "Updated";
+            document.getElementById("toastSub").textContent = sub || "Changes saved.";
+            el.classList.add("show");
+            window.clearTimeout(toast._t);
+            toast._t = window.setTimeout(() => el.classList.remove("show"), 2800);
+        }
+
+        let thresholds = loadJson(STORAGE_KEYS.thresholds, DEFAULT_THRESHOLDS);
+        let inventory = loadJson(STORAGE_KEYS.inventory, DEFAULT_INVENTORY);
+        let requests = loadJson(STORAGE_KEYS.requests, DEFAULT_REQUESTS);
+        let profile = loadJson(STORAGE_KEYS.profile, DEFAULT_PROFILE);
+
+        const viewEls = {
+            inventory: document.getElementById("view-inventory"),
+            requests: document.getElementById("view-requests"),
+            alerts: document.getElementById("view-alerts")
+        };
+
+        function setActiveNav(view) {
+            document.querySelectorAll(".nav-btn[data-view]").forEach(btn => {
+                const isActive = btn.getAttribute("data-view") === view;
+                btn.setAttribute("aria-current", isActive ? "page" : "false");
+            });
+        }
+
+        function showView(view) {
+            Object.entries(viewEls).forEach(([k, el]) => {
+                if (!el) return;
+                el.classList.toggle("hidden", k !== view);
+            });
+            setActiveNav(view);
+            const sub = document.getElementById("subTitle");
+            if (view === "inventory") sub.textContent = "Inventory management, emergency dispatch & verification";
+            if (view === "requests") sub.textContent = "Emergency blood requests with verification workflow";
+            if (view === "alerts") sub.textContent = "Low stock overview with status indicators";
+        }
+
+        function renderStatsAndAlerts() {
+            const entries = Object.entries(inventory);
+            let total = 0;
+            let good = 0;
+            let lowCritical = 0;
+            const alerts = [];
+
+            for (const [group, units] of entries) {
+                total += units;
+                const st = statusFor(units, thresholds);
+                if (st === "Good") good += 1;
+                else lowCritical += 1;
+
+                if (st !== "Good") {
+                    const icon = st === "Critical" ? "fa-triangle-exclamation" : "fa-circle-exclamation";
+                    const title = `${group} is ${st}`;
+                    const sub = st === "Critical"
+                        ? `Only ${units} units left. Dispatch priority and donor drives recommended.`
+                        : `Stock at ${units} units. Plan replenishment soon.`;
+                    alerts.push({ icon, title, sub, st });
+                }
             }
 
-            const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
-            
-            // Tab Switching
-            const invSection = document.getElementById('inventory-section');
-            const profSection = document.getElementById('profile-section');
-            const showInvBtn = document.getElementById('show-inventory');
-            const showProfBtn = document.getElementById('show-profile');
+            document.getElementById("statTotalUnits").textContent = String(total);
+            document.getElementById("statGood").textContent = String(good);
+            document.getElementById("statLowCritical").textContent = String(lowCritical);
+            document.getElementById("statUpdated").textContent = formatUpdated();
 
-            const switchTab = (tab) => {
-                if (tab === 'inventory') {
-                    invSection.style.display = 'block';
-                    profSection.style.display = 'none';
-                    showInvBtn.style.color = 'var(--primary-red)';
-                    showProfBtn.style.color = 'var(--slate-dark)';
-                    loadInventory();
-                    loadEmergencyRequests();
-                } else {
-                    invSection.style.display = 'none';
-                    profSection.style.display = 'block';
-                    showInvBtn.style.color = 'var(--slate-dark)';
-                    showProfBtn.style.color = 'var(--primary-red)';
-                    loadProfileData();
+            const renderList = (el) => {
+                el.innerHTML = "";
+                if (!alerts.length) {
+                    el.innerHTML = `
+                        <div class="alert">
+                            <div class="a-ic"><i class="fa-solid fa-shield-heart"></i></div>
+                            <div>
+                                <p class="a-title">All stocks are healthy</p>
+                                <p class="a-sub">No low or critical blood groups detected.</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
                 }
-            };
-
-            showInvBtn.onclick = () => switchTab('inventory');
-            showProfBtn.onclick = () => switchTab('profile');
-            
-            // Initial UI state
-            document.getElementById('bank-name-display').textContent = user.bankName;
-            document.getElementById('hero-bank-name-heading').textContent = user.bankName;
-            document.getElementById('hero-bank-details').textContent = `Location: ${user.location} | Contact: ${user.contactNumber}`;
-            
-            switchTab('inventory'); // Start with inventory
-
-            document.getElementById('logout-btn').onclick = () => {
-                localStorage.removeItem('user');
-                window.location.href = 'index.html';
-            };
-
-            // Inventory Logic
-            const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-            const inventoryGrid = document.getElementById('inventory-grid');
-            
-            const loadInventory = async () => {
-                try {
-                    const response = await fetch(`${BASE_URL}/api/blood-stock/bank/${user.id}`);
-                    if (response.ok) {
-                        const stocks = await response.json();
-                        const stockMap = {};
-                        stocks.forEach(s => stockMap[s.bloodGroup] = s.units);
-                        
-                        let totalUnits = 0;
-                        let lowStockCount = 0;
-
-                        inventoryGrid.innerHTML = bloodGroups.map(bg => {
-                            const units = stockMap[bg] || 0;
-                            totalUnits += units;
-                            if (units < 5) lowStockCount++;
-                            
-                            const fillHeight = Math.min((units / 20) * 100, 100); 
-                            
-                            return `
-                                <article class="blood-vial-card">
-                                    <div class="vial-header">
-                                        <div class="vial-type">${bg}</div>
-                                        <span class="vial-status ${units > 5 ? 'status-stable' : 'status-low'}">
-                                            ${units > 5 ? 'Stable' : 'Low Stock'}
-                                        </span>
-                                    </div>
-                                    <div class="vial-progress-container">
-                                        <div class="vial-progress-fill" style="height: ${fillHeight}%"></div>
-                                    </div>
-                                    <div class="units-display">${units} Units Available</div>
-                                    <form class="update-form-inline" onsubmit="handleUpdate(event, '${bg}')">
-                                        <input type="number" value="${units}" min="0" required id="input-${bg.replace('+', 'plus').replace('-', 'minus')}">
-                                        <button type="submit">Update</button>
-                                    </form>
-                                </article>
-                            `;
-                        }).join('');
-
-                        document.getElementById('total-units-stat').textContent = totalUnits;
-                        document.getElementById('low-stock-count').textContent = lowStockCount;
-                        document.getElementById('last-update-time').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    }
-                } catch (error) { console.error(error); }
-            };
-
-            // Profile Logic
-            const loadProfileData = async () => {
-                try {
-                    const response = await fetch(`${BASE_URL}/api/bloodbank/${user.id}`);
-                    if (response.ok) {
-                        const bankData = await response.json();
-                        document.getElementById('profile-bankName').value = bankData.bankName || '';
-                        document.getElementById('profile-location').value = bankData.location || '';
-                        document.getElementById('profile-city').value = bankData.city || '';
-                        document.getElementById('profile-contactNumber').value = bankData.contactNumber || '';
-                        document.getElementById('profile-email').value = bankData.email || '';
-                        
-                        // Sync with local storage and hero
-                        user.bankName = bankData.bankName;
-                        user.location = bankData.location;
-                        user.city = bankData.city;
-                        user.contactNumber = bankData.contactNumber;
-                        localStorage.setItem('user', JSON.stringify(user));
-                        document.getElementById('bank-name-display').textContent = user.bankName;
-                        document.getElementById('hero-bank-name-heading').textContent = user.bankName;
-                        document.getElementById('hero-bank-details').textContent = `Location: ${user.location} | Contact: ${user.contactNumber}`;
-                    }
-                } catch (error) {
-                    console.error("Error loading profile:", error);
-                    // Fallback to local storage if API fails
-                    document.getElementById('profile-bankName').value = user.bankName || '';
-                    document.getElementById('profile-location').value = user.location || '';
-                    document.getElementById('profile-contactNumber').value = user.contactNumber || '';
-                    document.getElementById('profile-email').value = user.email || '';
-                }
-            };
-
-            const profileForm = document.getElementById('profile-update-form');
-            profileForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const formData = new FormData(profileForm);
-                const data = Object.fromEntries(formData.entries());
-                const msgEl = document.getElementById('profile-update-message');
-                const btn = document.getElementById('update-profile-btn');
-
-                try {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                    
-                    const response = await fetch(`${BASE_URL}/api/bloodbank/${user.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                alerts
+                    .sort((a, b) => (a.st === "Critical" ? -1 : 1) - (b.st === "Critical" ? -1 : 1))
+                    .forEach(a => {
+                        el.insertAdjacentHTML("beforeend", `
+                            <div class="alert">
+                                <div class="a-ic"><i class="fa-solid ${a.icon}"></i></div>
+                                <div>
+                                    <p class="a-title">${a.title}</p>
+                                    <p class="a-sub">${a.sub}</p>
+                                </div>
+                            </div>
+                        `);
                     });
-
-                    const result = await response.json();
-                    if (response.ok && result.status) {
-                        msgEl.textContent = result.message;
-                        msgEl.className = 'auth-feedback auth-feedback-success';
-                        msgEl.style.display = 'block';
-                        
-                        // Update local storage
-                        user.bankName = data.bankName;
-                        user.location = data.location;
-                        user.city = data.city;
-                        user.contactNumber = data.contactNumber;
-                        localStorage.setItem('user', JSON.stringify(user));
-                        document.getElementById('bank-name-display').textContent = user.bankName;
-                    } else {
-                        msgEl.textContent = result.message || 'Update failed';
-                        msgEl.className = 'auth-feedback auth-feedback-error';
-                        msgEl.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>Save Changes</span> <i class="fas fa-check-circle"></i>';
-                }
             };
 
-            const loadEmergencyRequests = async () => {
-                const emergencySection = document.getElementById('emergency-requests-section');
-                const feed = document.getElementById('emergency-feed');
-                
-                try {
-                    // Try to get city from location or use city directly if available
-                    let city = user.city || user.location.split(',').pop().trim();
-                    
-                    // We can try to search for the full location if city extraction fails
-                    const response = await fetch(`${BASE_URL}/api/blood-requests/city/${encodeURIComponent(city)}`);
-                    
-                    if (response.ok) {
-                        const requests = await response.json();
-                        emergencySection.style.display = 'block'; // Always show section if we can load it
-                        
-                        if (requests.length > 0) {
-                            feed.innerHTML = requests.map(req => `
-                                <div class="feature-panel" style="border-left: 5px solid var(--primary-red); padding: 25px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                                        <span class="blood-badge" style="background: var(--primary-red); color: white; margin: 0;">${req.bloodGroup}</span>
-                                        <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">${new Date(req.requestDate).toLocaleDateString()}</span>
-                                    </div>
-                                    <h4 style="font-size: 1.1rem; margin-bottom: 10px;">${req.patientName}</h4>
-                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Requested by: <strong>${req.requesterName || 'Hero'}</strong></p>
-                                    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 15px;">
-                                        <i class="fas fa-hospital" style="color: var(--primary-red); width: 20px;"></i> ${req.hospitalName}
-                                    </p>
-                                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                                        <a href="tel:${req.contactNumber}" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; text-align: center; background: var(--slate-dark);">
-                                            <i class="fas fa-phone"></i> Call
-                                        </a>
-                                        <button onclick="processRequest(${req.id}, 'accept')" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; background: #16a34a;">
-                                            Accept
-                                        </button>
-                                        <button onclick="processRequest(${req.id}, 'reject')" class="btn-nav-primary" style="padding: 10px 15px; font-size: 0.85rem; flex: 1; background: #94a3b8;">
-                                            Ignore
-                                        </button>
-                                    </div>
-                                    <div style="text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--primary-red);">${req.unitsRequired} Units Needed</div>
-                                </div>
-                            `).join('');
-                        } else {
-                            feed.innerHTML = `
-                                <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 20px; border: 2px dashed #e2e8f0;">
-                                    <i class="fas fa-heart-circle-check" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
-                                    <p style="color: #64748b; font-weight: 500;">No active requests in <strong>${city}</strong> at the moment.</p>
-                                </div>
-                            `;
+            renderList(document.getElementById("alertList"));
+            renderList(document.getElementById("alertListStandalone"));
+        }
+
+        function bindInventoryActions() {
+            document.querySelectorAll("[data-inc]").forEach(btn => {
+                btn.onclick = () => {
+                    const group = btn.getAttribute("data-inc");
+                    const step = document.querySelector(`[data-step="${group}"]`);
+                    const delta = clampInt(step?.value ?? 1, 1, 999);
+                    inventory[group] = clampInt(inventory[group] + delta, 0, 9999);
+                    saveJson(STORAGE_KEYS.inventory, inventory);
+                    setUpdatedNow();
+                    toast("Stock increased", `${group} +${delta} units`);
+                    renderInventory();
+                };
+            });
+            document.querySelectorAll("[data-dec]").forEach(btn => {
+                btn.onclick = () => {
+                    const group = btn.getAttribute("data-dec");
+                    const step = document.querySelector(`[data-step="${group}"]`);
+                    const delta = clampInt(step?.value ?? 1, 1, 999);
+                    inventory[group] = clampInt(inventory[group] - delta, 0, 9999);
+                    saveJson(STORAGE_KEYS.inventory, inventory);
+                    setUpdatedNow();
+                    toast("Stock decreased", `${group} -${delta} units`);
+                    renderInventory();
+                };
+            });
+            document.querySelectorAll("[data-remove]").forEach(btn => {
+                btn.onclick = () => {
+                    const group = btn.getAttribute("data-remove");
+                    if (!confirm(`Remove ${group} from inventory?`)) return;
+                    delete inventory[group];
+                    saveJson(STORAGE_KEYS.inventory, inventory);
+                    setUpdatedNow();
+                    toast("Blood group removed", `${group} deleted from inventory`);
+                    renderInventory();
+                };
+            });
+            document.querySelectorAll("[data-set]").forEach(btn => {
+                btn.onclick = () => {
+                    const group = btn.getAttribute("data-set");
+                    const cur = inventory[group] ?? 0;
+                    const val = prompt(`Set units for ${group}:`, String(cur));
+                    if (val === null) return;
+                    inventory[group] = clampInt(val, 0, 9999);
+                    saveJson(STORAGE_KEYS.inventory, inventory);
+                    setUpdatedNow();
+                    toast("Units updated", `${group} set to ${inventory[group]} units`);
+                    renderInventory();
+                };
+            });
+        }
+
+        function renderInventory() {
+            const q = String(document.getElementById("searchGroups").value || "").trim().toUpperCase();
+            const grid = document.getElementById("stockGrid");
+            grid.innerHTML = "";
+
+            const entries = Object.entries(inventory)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .filter(([group]) => !q || group.includes(q));
+
+            entries.forEach(([group, units]) => {
+                const st = statusFor(units, thresholds);
+                const card = document.createElement("div");
+                card.className = "stock-card";
+                card.innerHTML = `
+                    <div class="stock-top">
+                        <div class="blood-tag">
+                            <div class="blood-badge">${group}</div>
+                            <div class="blood-meta">
+                                <p class="type">${group} Stock</p>
+                                <p class="sub">Status: <span class="${statusClass(st)}" style="font-weight:1000">${st}</span></p>
+                            </div>
+                        </div>
+                        <span class="status-pill ${statusClass(st)}" title="Stock status"><span class="dot"></span>${st}</span>
+                    </div>
+                    <div class="units-row">
+                        <div class="units"><span>${units}</span> <small>units</small></div>
+                        <div class="stepper" aria-label="Increase or decrease units">
+                            <button class="btn btn-ghost btn-small" data-dec="${group}" title="Decrease"><i class="fa-solid fa-minus"></i></button>
+                            <input inputmode="numeric" pattern="[0-9]*" value="1" aria-label="Step" data-step="${group}">
+                            <button class="btn btn-ghost btn-small" data-inc="${group}" title="Increase"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="stock-actions">
+                        <button class="btn btn-primary btn-small" data-set="${group}"><i class="fa-solid fa-pen"></i> Set Units</button>
+                        <button class="btn btn-danger btn-small" data-remove="${group}"><i class="fa-solid fa-trash"></i> Remove</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            bindInventoryActions();
+            renderStatsAndAlerts();
+        }
+
+        function renderRequests() {
+            const q = String(document.getElementById("requestSearch").value || "").trim().toLowerCase();
+            const tbody = document.getElementById("requestsTbody");
+            tbody.innerHTML = "";
+
+            const filtered = requests.filter(r => {
+                if (r.status !== "Pending") return false;
+                if (!q) return true;
+                return (
+                    String(r.patient).toLowerCase().includes(q) ||
+                    String(r.hospital).toLowerCase().includes(q) ||
+                    String(r.group).toLowerCase().includes(q) ||
+                    String(r.level).toLowerCase().includes(q)
+                );
+            });
+
+            document.getElementById("requestsEmpty").style.display = filtered.length ? "none" : "block";
+
+            filtered.forEach(r => {
+                const rxOk = r.rx === "Verified";
+                const verifyClass = rxOk ? "ok" : "bad";
+                const verifyIcon = rxOk ? "fa-circle-check" : "fa-circle-exclamation";
+                const verifyText = rxOk ? "Verified" : "Pending";
+
+                const tr = document.createElement("tr");
+                tr.className = "row";
+                tr.innerHTML = `
+                    <td data-label="Patient">
+                        <div class="who">
+                            <div class="pill-avatar">${initials(r.patient)}</div>
+                            <div>
+                                <p class="nm">${r.patient}</p>
+                                <p class="hs">${r.hospital}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Blood Needed"><span class="pill" style="display:inline-flex"><i class="fa-solid fa-droplet"></i> ${r.group}</span></td>
+                    <td data-label="Units"><span style="font-weight:1000">${r.units}</span></td>
+                    <td data-label="Emergency"><span class="lvl ${levelClass(r.level)}"><i class="fa-solid fa-bolt"></i> ${r.level}</span></td>
+                    <td data-label="Prescription">
+                        <span class="verify ${verifyClass}" title="Doctor prescription verification"><i class="fa-solid ${verifyIcon}"></i> ${verifyText}</span>
+                    </td>
+                    <td data-label="Actions" style="text-align:right">
+                        <div class="row-actions">
+                            <button class="btn btn-primary btn-small" data-accept="${r.id}"><i class="fa-solid fa-check"></i> Accept</button>
+                            <button class="btn btn-danger btn-small" data-reject="${r.id}"><i class="fa-solid fa-xmark"></i> Reject</button>
+                            <button class="btn btn-ghost btn-small" data-contact="${r.id}"><i class="fa-solid fa-phone"></i> Contact</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll("[data-accept]").forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute("data-accept");
+                    const r = requests.find(x => x.id === id);
+                    if (!r) return;
+                    if (r.rx !== "Verified" && !confirm("Prescription is not verified. Accept anyway?")) return;
+
+                    const g = normalizeGroup(r.group);
+                    if (g && inventory[g] != null) {
+                        if (inventory[g] < r.units && !confirm(`Only ${inventory[g]} units of ${g} available. Accept anyway?`)) return;
+                        if (inventory[g] >= r.units) {
+                            inventory[g] = clampInt(inventory[g] - r.units, 0, 9999);
+                            saveJson(STORAGE_KEYS.inventory, inventory);
                         }
                     }
-                } catch (error) {
-                    console.error("Error loading emergency requests:", error);
-                }
-            };
 
-            window.processRequest = async (requestId, action) => {
-                if (!confirm(`Are you sure you want to ${action} this request?`)) return;
-                
-                try {
-                    const url = `${BASE_URL}/api/blood-requests/${requestId}/${action}${action === 'accept' ? `?bloodBankId=${user.id}` : ''}`;
-                    const response = await fetch(url, {
-                        method: 'PUT'
-                    });
+                    r.status = "Accepted";
+                    saveJson(STORAGE_KEYS.requests, requests);
+                    setUpdatedNow();
+                    toast("Request accepted", `${r.patient} • ${r.group} • ${r.units} units`);
+                    renderInventory();
+                    renderRequests();
+                };
+            });
 
-                    const result = await response.json();
-                    alert(result.message);
-                    if (response.ok && result.status) {
-                        loadInventory();
-                        loadEmergencyRequests();
-                    }
-                } catch (error) {
-                    console.error("Error processing request:", error);
-                    alert("Failed to process request. Check inventory levels.");
-                }
-            };
+            document.querySelectorAll("[data-reject]").forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute("data-reject");
+                    const r = requests.find(x => x.id === id);
+                    if (!r) return;
+                    if (!confirm(`Reject request for ${r.patient}?`)) return;
+                    r.status = "Rejected";
+                    saveJson(STORAGE_KEYS.requests, requests);
+                    setUpdatedNow();
+                    toast("Request rejected", `${r.patient} • ${r.group}`);
+                    renderRequests();
+                };
+            });
 
-            window.handleUpdate = async (e, bloodGroup) => {
-                e.preventDefault();
-                const inputId = `input-${bloodGroup.replace('+', 'plus').replace('-', 'minus')}`;
-                const units = parseInt(document.getElementById(inputId).value);
-                const btn = e.target.querySelector('button');
-                
-                try {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
-                    const response = await fetch(`${BASE_URL}/api/blood-stock/bank/${user.id}/update`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ bloodGroup, units })
-                    });
+            document.querySelectorAll("[data-contact]").forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute("data-contact");
+                    const r = requests.find(x => x.id === id);
+                    if (!r) return;
+                    const phone = r.phone || "N/A";
+                    const msg = `Patient: ${r.patient}\nHospital: ${r.hospital}\nBlood: ${r.group}\nUnits: ${r.units}\nEmergency: ${r.level}\nPrescription: ${r.rx}\n\nPhone: ${phone}`;
+                    navigator.clipboard?.writeText(msg).catch(() => {});
+                    toast("Contact copied", "Patient details copied to clipboard for quick outreach.");
+                    alert(msg);
+                };
+            });
+        }
 
-                    if (response.ok) {
-                        loadInventory();
-                    }
-                } catch (error) { 
-                    console.error(error); 
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = 'Update';
-                }
-            };
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.add("show");
+            document.getElementById("sidebar")?.classList.remove("open");
+        }
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove("show");
+        }
 
-            loadInventory();
+        document.querySelectorAll("[data-close]").forEach(btn => {
+            btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
         });
+        document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+            backdrop.addEventListener("click", (e) => {
+                if (e.target === backdrop) backdrop.classList.remove("show");
+            });
+        });
+
+        function syncProfileUI() {
+            document.getElementById("miniAdminName").textContent = profile.adminName || "Admin";
+            document.getElementById("miniBankName").textContent = profile.bankName || "Blood Bank";
+            document.getElementById("bankLocationPill").textContent = profile.bankLocation || "Main Branch";
+        }
+
+        function fillProfileForm() {
+            document.getElementById("adminName").value = profile.adminName || "";
+            document.getElementById("adminRole").value = profile.adminRole || "";
+            document.getElementById("bankName").value = profile.bankName || "";
+            document.getElementById("bankLocation").value = profile.bankLocation || "";
+            document.getElementById("adminEmail").value = profile.email || "";
+            document.getElementById("adminPhone").value = profile.phone || "";
+            document.getElementById("bankAddress").value = profile.address || "";
+            document.getElementById("bankNote").value = profile.note || "";
+        }
+
+        function saveProfileFromForm() {
+            profile = {
+                adminName: String(document.getElementById("adminName").value || "").trim() || "Admin",
+                adminRole: String(document.getElementById("adminRole").value || "").trim() || "Blood Bank Admin",
+                bankName: String(document.getElementById("bankName").value || "").trim() || "Blood Bank",
+                bankLocation: String(document.getElementById("bankLocation").value || "").trim() || "Main Branch",
+                email: String(document.getElementById("adminEmail").value || "").trim(),
+                phone: String(document.getElementById("adminPhone").value || "").trim(),
+                address: String(document.getElementById("bankAddress").value || "").trim(),
+                note: String(document.getElementById("bankNote").value || "").trim()
+            };
+            saveJson(STORAGE_KEYS.profile, profile);
+            toast("Profile saved", "Admin & bank details updated.");
+            syncProfileUI();
+        }
+
+        function addGroup(group, units) {
+            const g = normalizeGroup(group);
+            if (!g) return toast("Invalid blood group", "Use formats like A+, AB-, O+.");
+            if (inventory[g] != null) return toast("Already exists", `${g} is already in inventory.`);
+            inventory[g] = clampInt(units ?? 0, 0, 9999);
+            saveJson(STORAGE_KEYS.inventory, inventory);
+            setUpdatedNow();
+            toast("Blood group added", `${g} created with ${inventory[g]} units.`);
+            renderInventory();
+        }
+
+        function removeGroup(group) {
+            const g = normalizeGroup(group);
+            if (!g || inventory[g] == null) return toast("Not found", "Blood group not present in inventory.");
+            delete inventory[g];
+            saveJson(STORAGE_KEYS.inventory, inventory);
+            setUpdatedNow();
+            toast("Blood group removed", `${g} removed from inventory.`);
+            renderInventory();
+        }
+
+        function setGroupUnits(group, units) {
+            const g = normalizeGroup(group);
+            if (!g) return toast("Invalid blood group", "Use formats like A+, AB-, O+.");
+            if (inventory[g] == null) inventory[g] = 0;
+            inventory[g] = clampInt(units ?? 0, 0, 9999);
+            saveJson(STORAGE_KEYS.inventory, inventory);
+            setUpdatedNow();
+            toast("Units updated", `${g} set to ${inventory[g]} units.`);
+            renderInventory();
+        }
+
+        function addRequest(payload) {
+            const group = normalizeGroup(payload.group);
+            if (!payload.patient || !payload.hospital || !group) return toast("Missing details", "Patient, hospital, and a valid blood group are required.");
+            const units = clampInt(payload.units, 1, 99);
+            const level = ["High", "Medium", "Low"].includes(payload.level) ? payload.level : "Medium";
+            const rx = ["Verified", "Pending"].includes(payload.rx) ? payload.rx : "Pending";
+            requests.unshift({
+                id: newId(),
+                patient: payload.patient.trim(),
+                phone: String(payload.phone || "").trim(),
+                hospital: payload.hospital.trim(),
+                group,
+                units,
+                level,
+                rx,
+                status: "Pending"
+            });
+            saveJson(STORAGE_KEYS.requests, requests);
+            setUpdatedNow();
+            toast("Request added", `${payload.patient.trim()} • ${group} • ${units} units`);
+            renderRequests();
+        }
+
+        function exportInventory() {
+            const payload = { profile, thresholds, updatedAt: localStorage.getItem(STORAGE_KEYS.updatedAt), inventory };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "blood-bank-inventory.json";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            toast("Export started", "Downloaded inventory JSON.");
+        }
+
+        // Events
+        document.querySelectorAll(".nav-btn[data-view]").forEach(btn => btn.addEventListener("click", () => showView(btn.getAttribute("data-view"))));
+        document.getElementById("mobileMenu").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+
+        document.getElementById("open-profile").addEventListener("click", () => { fillProfileForm(); openModal("profileModal"); });
+        document.getElementById("open-profile-top").addEventListener("click", () => { fillProfileForm(); openModal("profileModal"); });
+        document.getElementById("saveProfile").addEventListener("click", () => { saveProfileFromForm(); closeModal("profileModal"); });
+
+        document.getElementById("openAddGroup").addEventListener("click", () => {
+            document.getElementById("newGroupName").value = "";
+            document.getElementById("newGroupUnits").value = "0";
+            openModal("groupModal");
+        });
+        document.getElementById("addGroupConfirm").addEventListener("click", () => {
+            const g = document.getElementById("newGroupName").value;
+            const u = document.getElementById("newGroupUnits").value;
+            if (!normalizeGroup(g)) return toast("Invalid blood group", "Use A+, AB-, O+ etc.");
+            if (inventory[normalizeGroup(g)] != null) return toast("Already exists", "That group is already present.");
+            addGroup(g, u);
+            closeModal("groupModal");
+        });
+
+        document.getElementById("openThresholds").addEventListener("click", () => {
+            document.getElementById("thCritical").value = String(thresholds.criticalBelow);
+            document.getElementById("thLow").value = String(thresholds.lowBelow);
+            openModal("thresholdModal");
+        });
+        document.getElementById("saveThresholds").addEventListener("click", () => {
+            const crit = clampInt(document.getElementById("thCritical").value, 0, 999);
+            const low = clampInt(document.getElementById("thLow").value, 0, 999);
+            if (low < crit) return toast("Invalid thresholds", "Low threshold must be >= critical threshold.");
+            thresholds = { criticalBelow: crit, lowBelow: low };
+            saveJson(STORAGE_KEYS.thresholds, thresholds);
+            setUpdatedNow();
+            toast("Thresholds updated", `Critical < ${crit} • Low < ${low}`);
+            closeModal("thresholdModal");
+            renderInventory();
+        });
+
+        document.getElementById("quickAdd").addEventListener("click", () => addGroup(document.getElementById("quickGroup").value, document.getElementById("quickUnits").value));
+        document.getElementById("quickRemove").addEventListener("click", () => {
+            const g = normalizeGroup(document.getElementById("quickGroup").value);
+            if (!g) return toast("Invalid group", "Use A+, AB-, O+ etc.");
+            if (!confirm(`Remove ${g} from inventory?`)) return;
+            removeGroup(g);
+        });
+        document.getElementById("quickSet").addEventListener("click", () => setGroupUnits(document.getElementById("quickGroup").value, document.getElementById("quickUnits").value));
+
+        document.getElementById("searchGroups").addEventListener("input", renderInventory);
+        document.getElementById("requestSearch").addEventListener("input", renderRequests);
+        document.getElementById("exportJson").addEventListener("click", exportInventory);
+
+        document.getElementById("newRequest").addEventListener("click", () => {
+            document.getElementById("reqPatient").value = "";
+            document.getElementById("reqHospital").value = "";
+            document.getElementById("reqGroup").value = "";
+            document.getElementById("reqUnits").value = "1";
+            document.getElementById("reqLevel").value = "Medium";
+            document.getElementById("reqPhone").value = "";
+            document.getElementById("reqRx").value = "Verified";
+            openModal("requestModal");
+        });
+        document.getElementById("addRequestConfirm").addEventListener("click", () => {
+            addRequest({
+                patient: document.getElementById("reqPatient").value,
+                hospital: document.getElementById("reqHospital").value,
+                group: document.getElementById("reqGroup").value,
+                units: document.getElementById("reqUnits").value,
+                level: document.getElementById("reqLevel").value,
+                phone: document.getElementById("reqPhone").value,
+                rx: document.getElementById("reqRx").value
+            });
+            closeModal("requestModal");
+        });
+
+        document.getElementById("refreshAlerts").addEventListener("click", () => { renderStatsAndAlerts(); toast("Alerts refreshed", "Latest statuses applied."); });
+        document.getElementById("quick-contact").addEventListener("click", () => toast("Support", "Email: support@bloodcare.example • Phone: +91 80XXXXXX11"));
+
+        document.getElementById("logout").addEventListener("click", () => {
+            if (!confirm("Logout and clear local demo data for this dashboard?")) return;
+            Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
+            toast("Logged out", "Local data cleared. Redirecting...");
+            setTimeout(() => window.location.href = "login.html", 650);
+        });
+
+        document.getElementById("seedDemo").addEventListener("click", () => {
+            thresholds = DEFAULT_THRESHOLDS;
+            inventory = { ...DEFAULT_INVENTORY };
+            requests = [...DEFAULT_REQUESTS];
+            profile = { ...DEFAULT_PROFILE };
+            saveJson(STORAGE_KEYS.thresholds, thresholds);
+            saveJson(STORAGE_KEYS.inventory, inventory);
+            saveJson(STORAGE_KEYS.requests, requests);
+            saveJson(STORAGE_KEYS.profile, profile);
+            setUpdatedNow();
+            toast("Demo loaded", "Premium dashboard data restored.");
+            syncProfileUI();
+            renderInventory();
+            renderRequests();
+        });
+
+        (function init(){
+            if (!localStorage.getItem(STORAGE_KEYS.updatedAt)) setUpdatedNow();
+            syncProfileUI();
+            showView("inventory");
+            renderInventory();
+            renderRequests();
+        })();
     </script>
 </body>
 </html>

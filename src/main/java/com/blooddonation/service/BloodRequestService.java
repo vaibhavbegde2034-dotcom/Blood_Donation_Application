@@ -14,18 +14,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class BloodRequestService {
 
+    private static final SecureRandom OTP_RANDOM = new SecureRandom();
+    private static final List<String> ACTIVE_REQUEST_STATUSES = Arrays.asList(
+            "PENDING",
+            "DONOR_REQUEST_SENT",
+            "OTP_VERIFICATION"
+    );
+
     @Autowired
     private BloodRequestRepository bloodRequestRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private OtpEmailService otpEmailService;
 
     @Transactional
     public BloodRequest createRequest(BloodRequestDto dto, String username) {
@@ -44,6 +56,8 @@ public class BloodRequestService {
         request.setDescription(dto.getDescription());
         request.setRequesterName(requester.getFullName());
         request.setStatus("PENDING");
+        request.setOtpVerified(Boolean.FALSE);
+        request.setPatientAcceptedDonorRequest(Boolean.FALSE);
         request.setRequestDate(LocalDateTime.now());
 
         return bloodRequestRepository.save(request);
@@ -60,14 +74,14 @@ public class BloodRequestService {
     }
 
     public List<BloodRequestDto> getAllActiveRequests() {
-        return bloodRequestRepository.findByStatusOrderByRequestDateDesc("PENDING")
+        return bloodRequestRepository.findByStatusInOrderByRequestDateDesc(ACTIVE_REQUEST_STATUSES)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     public List<BloodRequestDto> getRequestsByCity(String city) {
-        return bloodRequestRepository.findByCityIgnoreCaseAndStatusOrderByRequestDateDesc(city, "PENDING")
+        return bloodRequestRepository.findByCityIgnoreCaseAndStatusInOrderByRequestDateDesc(city, ACTIVE_REQUEST_STATUSES)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -107,10 +121,12 @@ public class BloodRequestService {
         bloodStockRepository.save(stock);
 
         // 4. Update request status
-        request.setStatus("ACCEPTED");
+        request.setAcceptedBloodBankId(bank.getId());
+        request.setAcceptedBloodBankName(bank.getBankName());
+        request.setOtpVerified(Boolean.FALSE);
         bloodRequestRepository.save(request);
 
-        return new ApiResponseDto("Request accepted and inventory updated", true);
+        return new ApiResponseDto("Request accepted. Donor can now proceed for OTP confirmation.", true);
     }
 
     @Transactional
@@ -120,6 +136,126 @@ public class BloodRequestService {
         request.setStatus("REJECTED");
         bloodRequestRepository.save(request);
         return new ApiResponseDto("Request rejected", true);
+    }
+
+    @Transactional
+    public ApiResponseDto acceptByDonor(Long requestId, String donorUsername) {
+        BloodRequest request = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        User donor = userRepository.findByUsername(donorUsername)
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+
+        if (!"PENDING".equals(request.getStatus())) {
+            return new ApiResponseDto("Only pending requests can be accepted by a donor", false);
+        }
+
+        request.setAcceptedDonorUsername(donor.getUsername());
+        request.setAcceptedDonorName(donor.getFullName() != null && !donor.getFullName().isBlank() ? donor.getFullName() : donor.getUsername());
+        request.setPatientAcceptedDonorRequest(Boolean.FALSE);
+        request.setDonorRequestSentAt(LocalDateTime.now());
+        request.setStatus("DONOR_REQUEST_SENT");
+        bloodRequestRepository.save(request);
+
+        return new ApiResponseDto("Donor is ready to donate. Patient can now accept the donor request.", true);
+    }
+
+    @Transactional
+    public ApiResponseDto sendDonorRequest(Long requestId, String donorUsername) {
+        BloodRequest request = getRequestForDonor(requestId, donorUsername);
+
+        if (Boolean.TRUE.equals(request.getPatientAcceptedDonorRequest())) {
+            return new ApiResponseDto("Patient has already accepted the donor request", false);
+        }
+        if ("COMPLETED".equals(request.getStatus())) {
+            return new ApiResponseDto("Donation is already completed", false);
+        }
+
+        request.setStatus("DONOR_REQUEST_SENT");
+        request.setDonorRequestSentAt(LocalDateTime.now());
+        bloodRequestRepository.save(request);
+
+        return new ApiResponseDto("Donor request sent to patient. Patient can now accept this donor.", true);
+    }
+
+    @Transactional
+    public ApiResponseDto patientAcceptDonorRequest(Long requestId, String requesterUsername) {
+        BloodRequest request = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (!request.getRequester().getUsername().equalsIgnoreCase(requesterUsername)) {
+            return new ApiResponseDto("Only the requester can accept this donor request", false);
+        }
+        if (request.getAcceptedDonorUsername() == null || request.getAcceptedDonorUsername().isBlank()) {
+            return new ApiResponseDto("No donor has accepted this request yet", false);
+        }
+        if (!"DONOR_REQUEST_SENT".equals(request.getStatus())) {
+            return new ApiResponseDto("Donor request must be sent before patient acceptance", false);
+        }
+
+        User requester = request.getRequester();
+        String otp = String.format("%06d", OTP_RANDOM.nextInt(1_000_000));
+        request.setPatientAcceptedDonorRequest(Boolean.TRUE);
+        request.setPatientAcceptedAt(LocalDateTime.now());
+        request.setDonationOtp(otp);
+        request.setOtpVerified(Boolean.FALSE);
+        request.setOtpSentAt(LocalDateTime.now());
+        request.setOtpVerifiedAt(null);
+        request.setDonationCompletedAt(null);
+        request.setStatus("OTP_VERIFICATION");
+        bloodRequestRepository.save(request);
+
+        try {
+            otpEmailService.sendDonationOtp(requester, request, otp);
+            return new ApiResponseDto("Patient accepted donor request. OTP sent to patient email.", true);
+        } catch (RuntimeException ex) {
+            return new ApiResponseDto(
+                    "Patient accepted donor request. OTP generated, but email could not be sent: " + ex.getMessage(),
+                    true
+            );
+        }
+    }
+
+    @Transactional
+    public ApiResponseDto verifyOtp(Long requestId, String donorUsername, String otp) {
+        BloodRequest request = getRequestForDonor(requestId, donorUsername);
+
+        if (!"OTP_VERIFICATION".equals(request.getStatus())) {
+            return new ApiResponseDto("Send OTP before verifying it", false);
+        }
+        if (request.getDonationOtp() == null || request.getDonationOtp().isBlank()) {
+            return new ApiResponseDto("No OTP has been generated for this request", false);
+        }
+        if (!request.getDonationOtp().equals(otp)) {
+            return new ApiResponseDto("Invalid OTP. Ask the requester to confirm the latest code.", false);
+        }
+
+        request.setOtpVerified(Boolean.TRUE);
+        request.setOtpVerifiedAt(LocalDateTime.now());
+        request.setStatus("COMPLETED");
+        request.setDonationCompletedAt(LocalDateTime.now());
+        request.setDonationOtp(null);
+        bloodRequestRepository.save(request);
+
+        return new ApiResponseDto("OTP verified successfully. Donation Successfully Completed.", true);
+    }
+
+    @Transactional
+    public ApiResponseDto confirmDonation(Long requestId, String donorUsername) {
+        BloodRequest request = getRequestForDonor(requestId, donorUsername);
+
+        if (!Boolean.TRUE.equals(request.getOtpVerified())) {
+            return new ApiResponseDto("Verify OTP before confirming donation", false);
+        }
+        if ("COMPLETED".equals(request.getStatus())) {
+            return new ApiResponseDto("Donation is already completed", false);
+        }
+
+        request.setStatus("COMPLETED");
+        request.setDonationCompletedAt(LocalDateTime.now());
+        request.setDonationOtp(null);
+        bloodRequestRepository.save(request);
+
+        return new ApiResponseDto("Donation confirmed successfully", true);
     }
 
     private BloodRequestDto convertToDto(BloodRequest request) {
@@ -137,6 +273,33 @@ public class BloodRequestService {
         dto.setRequestDate(request.getRequestDate());
         dto.setRequesterUsername(request.getRequester().getUsername());
         dto.setRequesterName(request.getRequesterName());
+        dto.setPrescriptionFilePath(request.getPrescriptionFilePath());
+        dto.setAcceptedBloodBankId(request.getAcceptedBloodBankId());
+        dto.setAcceptedBloodBankName(request.getAcceptedBloodBankName());
+        dto.setAcceptedDonorUsername(request.getAcceptedDonorUsername());
+        dto.setAcceptedDonorName(request.getAcceptedDonorName());
+        dto.setOtpVerified(request.getOtpVerified());
+        dto.setPatientAcceptedDonorRequest(request.getPatientAcceptedDonorRequest());
+        dto.setOtpSentAt(request.getOtpSentAt());
+        dto.setOtpVerifiedAt(request.getOtpVerifiedAt());
+        dto.setDonationCompletedAt(request.getDonationCompletedAt());
+        dto.setDonorRequestSentAt(request.getDonorRequestSentAt());
+        dto.setPatientAcceptedAt(request.getPatientAcceptedAt());
         return dto;
+    }
+
+    private BloodRequest getRequestForDonor(Long requestId, String donorUsername) {
+        BloodRequest request = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (request.getAcceptedDonorUsername() == null || request.getAcceptedDonorUsername().isBlank()) {
+            throw new RuntimeException("Donor must accept the request before continuing");
+        }
+
+        if (!request.getAcceptedDonorUsername().equalsIgnoreCase(donorUsername)) {
+            throw new RuntimeException("This request is assigned to another donor");
+        }
+
+        return request;
     }
 }

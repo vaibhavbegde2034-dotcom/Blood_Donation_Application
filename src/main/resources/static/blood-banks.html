@@ -114,12 +114,12 @@
                 <span class="brand-text">BloodCare</span>
             </a>
             <nav class="main-nav">
-                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
                 <a href="search.html">Find Donors</a>
                 <a href="blood-banks.html" class="active">Blood Banks</a>
             </nav>
             <div class="nav-auth-actions" id="nav-actions">
-                <a href="login.html" class="btn-nav-primary">Login</a>
+                <!-- Populated by script -->
             </div>
         </div>
     </header>
@@ -165,19 +165,56 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const navActions = document.getElementById('nav-actions');
+            if (user) {
+                const displayName = user.username.split('@')[0];
+                navActions.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-weight: 600;">${displayName}</span>
+                        <button id="logout-btn" class="btn-nav-primary" style="padding: 10px 20px;">Logout</button>
+                    </div>
+                `;
+                document.getElementById('logout-btn').onclick = () => {
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            } else {
+                navActions.innerHTML = `<a href="login.html" class="btn-nav-primary">Login</a>`;
+            }
+
             const BASE_URL = window.location.port === '5500' ? 'http://localhost:8080' : '';
             const bankGrid = document.getElementById('bank-results');
             const loading = document.getElementById('loading-spinner');
             const noResults = document.getElementById('no-results');
             const searchBtn = document.getElementById('search-btn');
             const cityFilter = document.getElementById('filter-city');
+            const filtersBar = document.querySelector('.filters-bar');
+            const headerTitle = document.querySelector('.page-header h1');
+            const headerSubtitle = document.querySelector('.page-header p');
 
-            // Set up Nav based on login state
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user) {
-                document.getElementById('nav-actions').innerHTML = `
-                    <a href="${user.userType === 'BLOOD_BANK' ? 'bank-dashboard.html' : 'dashboard.html'}" class="btn-nav-primary">My Dashboard</a>
-                `;
+            const query = new URLSearchParams(window.location.search);
+            const selectedBankId = query.get('id');
+
+            async function fetchBankById(bankId) {
+                bankGrid.style.display = 'none';
+                noResults.style.display = 'none';
+                loading.style.display = 'block';
+
+                try {
+                    const response = await fetch(`${BASE_URL}/api/bloodbank/${encodeURIComponent(bankId)}`);
+                    if (response.ok) {
+                        const bank = await response.json();
+                        renderBankDetails(bank);
+                    } else {
+                        noResults.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    noResults.style.display = 'block';
+                } finally {
+                    loading.style.display = 'none';
+                }
             }
 
             async function fetchBanks(city = '') {
@@ -197,6 +234,53 @@
                 } finally {
                     loading.style.display = 'none';
                 }
+            }
+
+            function renderBankDetails(bank) {
+                bankGrid.style.display = 'grid';
+                bankGrid.innerHTML = `
+                    <article class="bank-card" style="max-width: 720px; margin: 0 auto;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap: 15px; margin-bottom: 15px;">
+                            <div class="bank-icon" style="margin-bottom: 0;">
+                                <i class="fas fa-hospital-user"></i>
+                            </div>
+                            <a href="blood-banks.html" class="btn-hero-secondary" style="padding: 10px 18px; font-size: 0.9rem; text-decoration: none;">
+                                <i class="fas fa-arrow-left"></i> All Banks
+                            </a>
+                        </div>
+
+                        <h3 style="font-size: 1.9rem; margin-bottom: 6px; color: var(--slate-dark);">${bank.bankName || 'Blood Bank'}</h3>
+                        <p style="font-size: 1rem; color: var(--slate-gray);">${bank.location || ''}</p>
+
+                        <div class="bank-meta" style="margin-top: 24px;">
+                            <div class="meta-item">
+                                <i class="fas fa-city"></i>
+                                <span>${bank.city || 'N/A'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>${bank.email || 'N/A'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-phone"></i>
+                                <span>${bank.contactNumber || 'N/A'}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap;">
+                            ${bank.contactNumber ? `
+                                <a href="tel:${bank.contactNumber}" class="btn-nav-primary" style="flex: 1; justify-content: center; min-width: 220px;">
+                                    <i class="fas fa-phone"></i> Call Now
+                                </a>
+                            ` : ''}
+                            ${bank.email ? `
+                                <a href="mailto:${bank.email}" class="btn-hero-secondary" style="flex: 1; justify-content: center; min-width: 220px; text-decoration: none;">
+                                    <i class="fas fa-envelope"></i> Email
+                                </a>
+                            ` : ''}
+                        </div>
+                    </article>
+                `;
             }
 
             function renderBanks(banks) {
@@ -244,7 +328,14 @@
             });
 
             // Initial load
-            fetchBanks();
+            if (selectedBankId) {
+                if (filtersBar) filtersBar.style.display = 'none';
+                if (headerTitle) headerTitle.textContent = 'Blood Bank Details';
+                if (headerSubtitle) headerSubtitle.textContent = 'Verified contact information for this blood bank.';
+                fetchBankById(selectedBankId);
+            } else {
+                fetchBanks();
+            }
         });
     </script>
 </body>
